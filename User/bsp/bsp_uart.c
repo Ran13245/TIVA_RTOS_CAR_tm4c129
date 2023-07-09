@@ -105,7 +105,7 @@ void init_drv_UART(){
     GPIOPinConfigure(GPIO_PA1_U0TX);
     UARTConfigSetExpClk(UART0_BASE, USER_SYS_FREQ, BAUD_RATE_UART0, UART_CONFIG_WLEN_8|UART_CONFIG_STOP_ONE|UART_CONFIG_PAR_NONE);
     UARTIntRegister(UART0_BASE, UART0_IRQHandler);
-    UARTIntEnable(UART0_BASE, UART_INT_RX);
+    UARTIntEnable(UART0_BASE, UART_INT_RX|UART_INT_RT);
     UARTFIFOLevelSet(UART0_BASE, UART_FIFO_RX1_8, UART_FIFO_TX1_8);
     IntPrioritySet(INT_UART0,PRIORITY_UART0);
     IntEnable(INT_UART0);
@@ -117,7 +117,7 @@ void init_drv_UART(){
     GPIOPinConfigure(GPIO_PB0_U1RX);
     UARTConfigSetExpClk(UART1_BASE, USER_SYS_FREQ, BAUD_RATE_UART1,(UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
     UARTIntRegister(UART1_BASE,UART1_IRQHandler);
-    UARTIntEnable(UART1_BASE,UART_INT_RX);
+    UARTIntEnable(UART1_BASE,UART_INT_RX|UART_INT_RT);
     UARTFIFOLevelSet(UART1_BASE, UART_FIFO_RX1_8, UART_FIFO_TX1_8);
     IntPrioritySet(INT_UART1,PRIORITY_UART1);
     IntEnable(INT_UART1);
@@ -130,7 +130,7 @@ void init_drv_UART(){
     UARTConfigSetExpClk(UART2_BASE, USER_SYS_FREQ, BAUD_RATE_UART2,(UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
 	UARTFIFOLevelSet(UART2_BASE, UART_FIFO_RX1_8, UART_FIFO_TX1_8);
     UARTIntRegister(UART2_BASE,UART2_IRQHandler);
-    UARTIntEnable(UART2_BASE,UART_INT_RX);
+    UARTIntEnable(UART2_BASE,UART_INT_RX|UART_INT_RT);
     IntPrioritySet(INT_UART2,PRIORITY_UART2);
     IntEnable(INT_UART2);
 	
@@ -142,7 +142,7 @@ void init_drv_UART(){
     UARTConfigSetExpClk(UART3_BASE, USER_SYS_FREQ, BAUD_RATE_UART3,(UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
 	UARTFIFOLevelSet(UART3_BASE, UART_FIFO_RX1_8, UART_FIFO_TX1_8);
     UARTIntRegister(UART3_BASE,UART3_IRQHandler);
-    UARTIntEnable(UART3_BASE,UART_INT_RX);
+    UARTIntEnable(UART3_BASE,UART_INT_RX|UART_INT_RT);
     IntPrioritySet(INT_UART3,PRIORITY_UART3);
     IntEnable(INT_UART3);
 	
@@ -154,7 +154,7 @@ void init_drv_UART(){
     UARTConfigSetExpClk(UART4_BASE, USER_SYS_FREQ, BAUD_RATE_UART4,(UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
 	UARTFIFOLevelSet(UART4_BASE, UART_FIFO_RX1_8, UART_FIFO_TX1_8);
     UARTIntRegister(UART4_BASE,UART4_IRQHandler);
-    UARTIntEnable(UART4_BASE,UART_INT_RX);
+    UARTIntEnable(UART4_BASE,UART_INT_RX|UART_INT_RT);
     IntPrioritySet(INT_UART4,PRIORITY_UART4);
 	IntEnable(INT_UART4);
 
@@ -183,8 +183,7 @@ void init_drv_UART(){
 }
 
 void _DeviceRxIntHandler(uint32_t ui32Base, uart_device* device){
-
-    UARTIntClear(ui32Base, UART_INT_OE);//清除中断标志
+    UARTIntClear(ui32Base, UART_INT_RX|UART_INT_RT);//清除中断标志
     UARTRxErrorClear(ui32Base);
     while (UARTCharsAvail(ui32Base))
     {
@@ -201,12 +200,14 @@ void _DeviceRxIntHandler(uint32_t ui32Base, uart_device* device){
         }
         if((device->received_head)&&(rdata==UART_TAIL)){
             len=device->rx_p-device->tx_p;
-            Queue_uint8_t_enqueue(&device->rx_len_queue,len);//给信号量,拉起RX处理任务
+            Queue_uint8_t_enqueue(&device->rx_len_queue,len);
+#if  (!TEST_BENCH)
             BaseType_t pxHigherPriorityTaskWoken;
-            if(xSemaphoreGiveFromISR(semphr_uart_receive,&pxHigherPriorityTaskWoken) == errQUEUE_FULL){
+            if(xSemaphoreGiveFromISR(semphr_uart_receive,&pxHigherPriorityTaskWoken) == errQUEUE_FULL){//给信号量,拉起RX处理任务
                 error_uart();//丢包了
             }
             // portYIELD_FROM_ISR(pxHigherPriorityTaskWoken);
+#endif
             device->rx_p=0;
             device->tx_p=0;
             device->received_head=false;
@@ -340,6 +341,7 @@ void Uart_DMA_Trans(uint32_t uiBase, uint8_t *pcString, uint16_t length){
     if(uDMAChannelIsEnabled(dma_channel) == false){//判断DMA是否发送完成
         uDMAChannelTransferSet(UDMA_PRI_SELECT | dma_channel, UDMA_MODE_BASIC, pcString,(void*)uart_dr,length);
         uDMAChannelEnable(dma_channel);
+        uDMAChannelRequest(dma_channel);
     }
 
 }

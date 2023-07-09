@@ -6,21 +6,21 @@
 extern void delay_ms(uint32_t n);
 
 void Enter_Testbench(void){
-    SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+    SysCtlClockFreqSet(SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN|SYSCTL_USE_PLL|SYSCTL_CFG_VCO_240,USER_SYS_FREQ);
     FPUEnable();
 	FPULazyStackingEnable();
 	IntPriorityGroupingSet(3);
     init_drv_GPIO();
 	init_drv_UART();
     delay_ms(2000);//等待小车完全停止
-    // test_print();
+    test_print();
     // test_encoder();
     // test_wave();
     // test_pwm_output();
     // test_motor_input();
     // test_motor_pid();
     // test_imu();
-    test_communicate();
+    // test_communicate();
     // test_car();
     // test_utils();
     while(1);
@@ -37,9 +37,11 @@ void test_print(void){
     uint32_t uiBase=CONSOLE_UART;
     init_drv_uDMA();
     while(1){
-        // printf_user(uiBase,"test1\r\n");
-        printf_user(CONSOLE_UART,"%d",uDMAChannelSizeGet( UDMA_PRI_SELECT| 9)); 
-        Uart_DMA_Trans(uiBase, test, 7);
+        printf_user(uiBase,"test1\r\n");
+        // printf_user(CONSOLE_UART,"%d",uDMAChannelSizeGet( UDMA_PRI_SELECT| 9)); 
+        // Uart_DMA_Trans(uiBase, test, 7);
+        UartRxSolve();
+            printf_user(CONSOLE_UART,"%d",UARTCharsAvail(CONSOLE_UART));
         delay_ms(500);
     }
 }
