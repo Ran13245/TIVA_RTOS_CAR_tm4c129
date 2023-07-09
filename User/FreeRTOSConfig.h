@@ -123,7 +123,7 @@
  * Fclk为供给CPU内核的时钟信号，我们所说的cpu主频为 XX MHz，
  * 就是指的这个时钟信号，相应的，1/Fclk即为cpu时钟周期；
  */
-#define configCPU_CLOCK_HZ						  (80000000)
+#define configCPU_CLOCK_HZ						  (12000000)
 
 //RTOS系统节拍中断的频率。即一秒中断的次数，每次中断RTOS都会进行任务调度
 #define configTICK_RATE_HZ						  (( TickType_t )1000)
@@ -172,7 +172,7 @@
 //支持静态内存
 #define configSUPPORT_STATIC_ALLOCATION					0					
 //系统所有总的堆大小
-#define configTOTAL_HEAP_SIZE					((size_t)(20*1024))    
+#define configTOTAL_HEAP_SIZE					((size_t)(30*1024))    
 
 
 /***************************************************************

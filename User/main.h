@@ -15,6 +15,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define USER_SYS_FREQ 12000000
+
 #define LEDR_Pin GPIO_PIN_7
 #define LEDR_GPIO_Port GPIO_PORTC_BASE
 #define LEDG_Pin GPIO_PIN_3

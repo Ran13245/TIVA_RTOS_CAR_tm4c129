@@ -12,7 +12,7 @@
 #include "main.h"
 #include "bsp_gpio.h"
 #include "driverlib/gpio.h"
-#include "tm4c1290ncpdt.h""
+#include "tm4c1290ncpdt.h"
 #include "hw_memmap.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"

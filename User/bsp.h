@@ -16,7 +16,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "tm4c1290ncpdt.h""
+#include "tm4c1290ncpdt.h"
 #include "hw_types.h"					
 #include "hw_memmap.h"	
 #include "hw_gpio.h"			
@@ -31,6 +31,7 @@
 #include "driverlib/udma.h"
 #include "driverlib/adc.h"
 
+#include "config.h"
 #include "main.h"
 #include "bsp_uart.h"
 #include "bsp_gpio.h"
@@ -48,6 +49,6 @@
 #include "car_control.h"
 #include "user_filter.h"
 
-#include "config.h"
+
 
 #endif

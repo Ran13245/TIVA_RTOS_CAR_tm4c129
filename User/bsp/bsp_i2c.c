@@ -35,5 +35,5 @@ void init_drv_HardwareI2C()
     GPIOPinTypeI2C(GPIO_PORTA_BASE, GPIO_PIN_3);
     GPIOPinTypeI2CSCL(GPIO_PORTA_BASE, GPIO_PIN_2);
 
-    I2CMasterInitExpClk(I2C8_BASE, SysCtlClockGet(), true);
+    I2CMasterInitExpClk(I2C8_BASE, USER_SYS_FREQ, true);
 }

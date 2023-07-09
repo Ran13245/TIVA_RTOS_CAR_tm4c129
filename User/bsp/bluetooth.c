@@ -2,7 +2,7 @@
 #include "bluetooth.h"
 #include "bsp_uart.h"
 #include "driverlib/sysctl.h"
-
+extern void delay_ms(uint32_t n);
 /*!
  * @brief 设置蓝牙模块,需要设置时调用一次即可
  * @param  
@@ -10,6 +10,6 @@
 void BLE_AT_Set(void){
     
     printf_user(BLE_UART,"AT+NAME=HC-09-ZRH");
-    SysCtlDelay(200*SysCtlClockGet()/3000);	
+    delay_ms(200);
     printf_user(BLE_UART,"AT+CLEAR");
 }
