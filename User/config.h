@@ -40,8 +40,8 @@
     // #define         K210_UART        UART3_BASE
     // #define         OPENMV_UART      UART4_BASE
 #else 
-    #define         USB_UART         UART0_BASE
-    #define         BLE_UART         UART1_BASE
+    #define         USB_UART         UART4_BASE
+    // #define         BLE_UART         UART1_BASE
     // #define         Jetson_UART      UART0_BASE
     // #define         K210_UART        UART3_BASE
     // #define         OPENMV_UART      UART4_BASE
@@ -123,7 +123,7 @@
 #define         V_DEGREE_FROM_IMU       0
 
 //每圈编码器数
-#define         ENC_EVERY_CIRCLE        1550
+#define         ENC_EVERY_CIRCLE        1560
 //轮直径 mm
 #define         WHEEL_DIR               67
 
