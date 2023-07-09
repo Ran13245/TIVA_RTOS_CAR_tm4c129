@@ -34,9 +34,9 @@
  */
 /*设备串口,不用时注释掉*/
 #if (!TEST_BENCH)
-    // #define         USB_UART         UART0_BASE
-    #define         BLE_UART         UART1_BASE
-    #define         Jetson_UART      UART0_BASE
+    #define         USB_UART         UART4_BASE
+    // #define         BLE_UART         UART1_BASE
+    // #define         Jetson_UART      UART0_BASE
     // #define         K210_UART        UART3_BASE
     // #define         OPENMV_UART      UART4_BASE
 #else 
@@ -51,7 +51,7 @@
 #endif
 
 /*终端串口*/
-#define         CONSOLE_UART     BLE_UART
+#define         CONSOLE_UART     USB_UART
 
 /*串口波特率*/
 #define         BAUD_RATE_UART0     115200

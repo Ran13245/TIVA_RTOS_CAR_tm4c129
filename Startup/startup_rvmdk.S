@@ -93,6 +93,11 @@ __heap_limit
 ; The vector table.
 ;
 ;******************************************************************************
+
+                EXTERN	PendSV_Handler
+		EXTERN	SVC_Handler
+		EXTERN	SysTick_Handler
+
         EXPORT  __Vectors
 __Vectors
         DCD     StackMem + Stack            ; Top of Stack
@@ -106,11 +111,11 @@ __Vectors
         DCD     0                           ; Reserved
         DCD     0                           ; Reserved
         DCD     0                           ; Reserved
-        DCD     IntDefaultHandler           ; SVCall handler
+        DCD     SVC_Handler           ; SVCall handler
         DCD     IntDefaultHandler           ; Debug monitor handler
         DCD     0                           ; Reserved
-        DCD     IntDefaultHandler           ; The PendSV handler
-        DCD     IntDefaultHandler           ; The SysTick handler
+        DCD     PendSV_Handler           ; The PendSV handler
+        DCD     SysTick_Handler           ; The SysTick handler
         DCD     IntDefaultHandler           ; GPIO Port A
         DCD     IntDefaultHandler           ; GPIO Port B
         DCD     IntDefaultHandler           ; GPIO Port C
