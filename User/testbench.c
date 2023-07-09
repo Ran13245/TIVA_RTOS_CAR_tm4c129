@@ -7,6 +7,7 @@ extern void delay_ms(uint32_t n);
 
 void Enter_Testbench(void){
     SysCtlClockFreqSet(SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN|SYSCTL_USE_PLL|SYSCTL_CFG_VCO_240,USER_SYS_FREQ);
+    SysCtlClockFreqSet(SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN|SYSCTL_USE_PLL|SYSCTL_CFG_VCO_240,USER_SYS_FREQ);
     FPUEnable();
 	FPULazyStackingEnable();
 	IntPriorityGroupingSet(3);
@@ -14,12 +15,14 @@ void Enter_Testbench(void){
 	init_drv_UART();
     delay_ms(2000);//等待小车完全停止
     test_print();
+    test_print();
     // test_encoder();
     // test_wave();
     // test_pwm_output();
     // test_motor_input();
     // test_motor_pid();
     // test_imu();
+    // test_communicate();
     // test_communicate();
     // test_car();
     // test_utils();
