@@ -105,7 +105,6 @@ void init_drv_UART(){
     GPIOPinConfigure(GPIO_PA1_U0TX);
     UARTConfigSetExpClk(UART0_BASE, USER_SYS_FREQ, BAUD_RATE_UART0, UART_CONFIG_WLEN_8|UART_CONFIG_STOP_ONE|UART_CONFIG_PAR_NONE);
     UARTIntRegister(UART0_BASE, UART0_IRQHandler);
-    UARTIntEnable(UART0_BASE, UART_INT_RX|UART_INT_RT);
     UARTFIFOLevelSet(UART0_BASE, UART_FIFO_RX1_8, UART_FIFO_TX1_8);
     IntPrioritySet(INT_UART0,PRIORITY_UART0);
     IntEnable(INT_UART0);
@@ -117,7 +116,6 @@ void init_drv_UART(){
     GPIOPinConfigure(GPIO_PB0_U1RX);
     UARTConfigSetExpClk(UART1_BASE, USER_SYS_FREQ, BAUD_RATE_UART1,(UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
     UARTIntRegister(UART1_BASE,UART1_IRQHandler);
-    UARTIntEnable(UART1_BASE,UART_INT_RX|UART_INT_RT);
     UARTFIFOLevelSet(UART1_BASE, UART_FIFO_RX1_8, UART_FIFO_TX1_8);
     IntPrioritySet(INT_UART1,PRIORITY_UART1);
     IntEnable(INT_UART1);
@@ -130,7 +128,6 @@ void init_drv_UART(){
     UARTConfigSetExpClk(UART2_BASE, USER_SYS_FREQ, BAUD_RATE_UART2,(UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
 	UARTFIFOLevelSet(UART2_BASE, UART_FIFO_RX1_8, UART_FIFO_TX1_8);
     UARTIntRegister(UART2_BASE,UART2_IRQHandler);
-    UARTIntEnable(UART2_BASE,UART_INT_RX|UART_INT_RT);
     IntPrioritySet(INT_UART2,PRIORITY_UART2);
     IntEnable(INT_UART2);
 	
@@ -142,7 +139,6 @@ void init_drv_UART(){
     UARTConfigSetExpClk(UART3_BASE, USER_SYS_FREQ, BAUD_RATE_UART3,(UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
 	UARTFIFOLevelSet(UART3_BASE, UART_FIFO_RX1_8, UART_FIFO_TX1_8);
     UARTIntRegister(UART3_BASE,UART3_IRQHandler);
-    UARTIntEnable(UART3_BASE,UART_INT_RX|UART_INT_RT);
     IntPrioritySet(INT_UART3,PRIORITY_UART3);
     IntEnable(INT_UART3);
 	
@@ -154,28 +150,32 @@ void init_drv_UART(){
     UARTConfigSetExpClk(UART4_BASE, USER_SYS_FREQ, BAUD_RATE_UART4,(UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
 	UARTFIFOLevelSet(UART4_BASE, UART_FIFO_RX1_8, UART_FIFO_TX1_8);
     UARTIntRegister(UART4_BASE,UART4_IRQHandler);
-    UARTIntEnable(UART4_BASE,UART_INT_RX|UART_INT_RT);
     IntPrioritySet(INT_UART4,PRIORITY_UART4);
 	IntEnable(INT_UART4);
 
 
     #ifdef USB_UART
+        UARTIntEnable(USB_UART,UART_INT_RX|UART_INT_RT);
         RingBuf_uint8_t_init( &uart_usb.ringbuf , uart_usb.buffer , BUFFER_SIZE );
         Queue_uint8_t_init(&uart_usb.rx_len_queue,uart_usb._queue,RX_QUEUE_SIZE);
     #endif
     #ifdef BLE_UART
+        UARTIntEnable(BLE_UART,UART_INT_RX|UART_INT_RT);
         RingBuf_uint8_t_init( &uart_ble.ringbuf , uart_ble.buffer , BUFFER_SIZE );
         Queue_uint8_t_init(&uart_ble.rx_len_queue,uart_ble._queue,RX_QUEUE_SIZE);
     #endif
     #ifdef Jetson_UART
+        UARTIntEnable(Jetson_UART,UART_INT_RX|UART_INT_RT);
         RingBuf_uint8_t_init( &uart_jetson.ringbuf , uart_jetson.buffer , BUFFER_SIZE );
         Queue_uint8_t_init(&uart_jetson.rx_len_queue,uart_jetson._queue,RX_QUEUE_SIZE);
     #endif
     #ifdef K210_UART
+        UARTIntEnable(K210_UART,UART_INT_RX|UART_INT_RT);
         RingBuf_uint8_t_init( &uart_k210.ringbuf , uart_k210.buffer , BUFFER_SIZE );
         Queue_uint8_t_init(&uart_k210.rx_len_queue,uart_k210._queue,RX_QUEUE_SIZE);
     #endif
     #ifdef OPENMV_UART
+        UARTIntEnable(OPENMV_UART,UART_INT_RX|UART_INT_RT);
         RingBuf_uint8_t_init( &uart_openmv.ringbuf , uart_openmv.buffer , BUFFER_SIZE );
         Queue_uint8_t_init(&uart_openmv.rx_len_queue,uart_openmv._queue,RX_QUEUE_SIZE);
     #endif
@@ -183,8 +183,6 @@ void init_drv_UART(){
 }
 
 void _DeviceRxIntHandler(uint32_t ui32Base, uart_device* device){
-    UARTIntClear(ui32Base, UART_INT_RX|UART_INT_RT);//清除中断标志
-    UARTRxErrorClear(ui32Base);
     while (UARTCharsAvail(ui32Base))
     {
         uint8_t rdata;
@@ -221,7 +219,8 @@ void _DeviceRxIntHandler(uint32_t ui32Base, uart_device* device){
  * @param ui32Base 中断BASE 
  @*/
 void UartRxIntHandler(uint32_t ui32Base){
-
+    UARTIntClear(ui32Base, UART_INT_RX|UART_INT_RT);//清除中断标志
+    UARTRxErrorClear(ui32Base);
     #ifdef USB_UART
         if(ui32Base==USB_UART){
             _DeviceRxIntHandler(USB_UART,&uart_usb);

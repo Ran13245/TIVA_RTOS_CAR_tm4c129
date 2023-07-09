@@ -81,6 +81,7 @@ int main(void){
 	
 	if(pdPASS == xReturn){
 		printf_user(CONSOLE_UART,"Launch RTOS\r\n");
+		IntMasterEnable();
 		portENABLE_INTERRUPTS();
 		printf_user(CONSOLE_UART,"Enable Interrupt\r\n");
 		vTaskStartScheduler();

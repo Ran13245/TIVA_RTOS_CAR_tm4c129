@@ -117,6 +117,4 @@ void init_drv_GPIO(void){
     GPIOIntEnable(EncB_RightRear_GPIO_Port, EncB_RightRear_IntPin);
     GPIOIntTypeSet(EncB_RightRear_GPIO_Port, EncB_RightRear_Pin, GPIO_RISING_EDGE);
 #endif
-    
-    IntMasterEnable();
 }
