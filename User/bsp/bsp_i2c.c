@@ -11,7 +11,7 @@
 
 #include "main.h"
 #include "bsp_i2c.h"
-#include "tm4c123gh6pm.h"
+#include "tm4c1290ncpdt.h"
 #include "hw_memmap.h"
 #include "driverlib/i2c.h"
 #include "driverlib/sysctl.h"
@@ -29,12 +29,11 @@ void init_drv_HardwareI2C()
 {	
 
 
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_I2C0);
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
-    GPIOPinConfigure(GPIO_PB2_I2C0SCL);
-    GPIOPinConfigure(GPIO_PB3_I2C0SDA);
-    GPIOPinTypeI2C(GPIO_PORTB_BASE, GPIO_PIN_3);
-    GPIOPinTypeI2CSCL(GPIO_PORTB_BASE, GPIO_PIN_2);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_I2C8);
+    GPIOPinConfigure(GPIO_PA2_I2C8SCL);
+    GPIOPinConfigure(GPIO_PA3_I2C8SDA);
+    GPIOPinTypeI2C(GPIO_PORTA_BASE, GPIO_PIN_3);
+    GPIOPinTypeI2CSCL(GPIO_PORTA_BASE, GPIO_PIN_2);
 
-    I2CMasterInitExpClk(I2C0_BASE, SysCtlClockGet(), true);
+    I2CMasterInitExpClk(I2C8_BASE, SysCtlClockGet(), true);
 }

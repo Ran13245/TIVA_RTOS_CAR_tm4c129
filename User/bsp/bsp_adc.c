@@ -5,6 +5,7 @@
 #include "hw_memmap.h"
 #include "driverlib/gpio.h"
 #include "bsp_adc.h"
+#include "main.h"
 
 float main_voltage=0;
 
@@ -14,9 +15,8 @@ float main_voltage=0;
  */
 void init_drv_ADC(void){
     // 使能时钟
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC0);
-	GPIOPinTypeADC(ADC0_BASE,GPIO_PIN_2);
+	GPIOPinTypeADC(POWER_BASE,POWER_PIN);
 	// 采样配置
 	ADCSequenceConfigure(ADC0_BASE,3,ADC_TRIGGER_PROCESSOR,0);
 	// 采样因子配置

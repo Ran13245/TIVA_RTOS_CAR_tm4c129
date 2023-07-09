@@ -14,11 +14,11 @@
 #include "driverlib/sysctl.h"
 #include "hw_memmap.h"
 #include "driverlib/uart.h"
-#include "tm4c123_it.h"
+#include "tm4c129_it.h"
 #include "driverlib/pin_map.h"
 #include "driverlib/gpio.h"
 #include "driverlib/interrupt.h"
-#include "tm4c123gh6pm.h"
+#include "tm4c1290ncpdt.h""
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -124,12 +124,9 @@ void init_drv_UART(){
 	
 	/* UART2 */
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART2);
-    HWREG(GPIO_PORTD_BASE + GPIO_O_LOCK) = GPIO_LOCK_KEY;
-    HWREG(GPIO_PORTD_BASE + GPIO_O_CR) |= (1<<7);
-    HWREG(GPIO_PORTD_BASE + GPIO_O_LOCK) = 0;
-	GPIOPinTypeUART(GPIO_PORTD_BASE, GPIO_PIN_6 | GPIO_PIN_7);
-    GPIOPinConfigure(GPIO_PD7_U2TX);
-    GPIOPinConfigure(GPIO_PD6_U2RX);
+	GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_6 | GPIO_PIN_7);
+    GPIOPinConfigure(GPIO_PA7_U2TX);
+    GPIOPinConfigure(GPIO_PA6_U2RX);
     UARTConfigSetExpClk(UART2_BASE, SysCtlClockGet(), BAUD_RATE_UART2,(UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
 	UARTFIFOLevelSet(UART2_BASE, UART_FIFO_RX1_8, UART_FIFO_TX1_8);
     UARTIntRegister(UART2_BASE,UART2_IRQHandler);
@@ -139,9 +136,9 @@ void init_drv_UART(){
 	
 	/* UART3 */
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_UART3);
-	GPIOPinTypeUART(GPIO_PORTC_BASE, GPIO_PIN_6 | GPIO_PIN_7);
-    GPIOPinConfigure(GPIO_PC7_U3TX);
-    GPIOPinConfigure(GPIO_PC6_U3RX);
+	GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_5 | GPIO_PIN_4);
+    GPIOPinConfigure(GPIO_PA5_U3TX);
+    GPIOPinConfigure(GPIO_PA4_U3RX);
     UARTConfigSetExpClk(UART3_BASE, SysCtlClockGet(), BAUD_RATE_UART3,(UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
 	UARTFIFOLevelSet(UART3_BASE, UART_FIFO_RX1_8, UART_FIFO_TX1_8);
     UARTIntRegister(UART3_BASE,UART3_IRQHandler);
@@ -151,9 +148,9 @@ void init_drv_UART(){
 	
 	/* UART4 */
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART4);
-	GPIOPinTypeUART(GPIO_PORTC_BASE, GPIO_PIN_4 | GPIO_PIN_5);
-    GPIOPinConfigure(GPIO_PC5_U4TX);
-    GPIOPinConfigure(GPIO_PC4_U4RX);
+	GPIOPinTypeUART(GPIO_PORTK_BASE, GPIO_PIN_1 | GPIO_PIN_0);
+    GPIOPinConfigure(GPIO_PK1_U4TX);
+    GPIOPinConfigure(GPIO_PK0_U4RX);
     UARTConfigSetExpClk(UART4_BASE, SysCtlClockGet(), BAUD_RATE_UART4,(UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
 	UARTFIFOLevelSet(UART4_BASE, UART_FIFO_RX1_8, UART_FIFO_TX1_8);
     UARTIntRegister(UART4_BASE,UART4_IRQHandler);
