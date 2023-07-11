@@ -340,7 +340,6 @@ void Uart_DMA_Trans(uint32_t uiBase, uint8_t *pcString, uint16_t length){
     if(uDMAChannelIsEnabled(dma_channel) == false){//判断DMA是否发送完成
         uDMAChannelTransferSet(UDMA_PRI_SELECT | dma_channel, UDMA_MODE_BASIC, pcString,(void*)uart_dr,length);
         uDMAChannelEnable(dma_channel);
-        uDMAChannelRequest(dma_channel);
     }
 
 }

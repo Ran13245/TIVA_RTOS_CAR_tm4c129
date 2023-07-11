@@ -13,7 +13,7 @@ void Enter_Testbench(void){
     init_drv_GPIO();
 	init_drv_UART();
     IntMasterEnable();
-    delay_ms(2000);//等待小车完全停止
+    // delay_ms(2000);//等待小车完全停止
     test_print();
     // test_encoder();
     // test_wave();
@@ -37,11 +37,11 @@ void Enter_Testbench(void){
 void test_print(void){
     uint8_t test[7]={'t','e','s','t','2','\r','\n'};
     uint32_t uiBase=CONSOLE_UART;
-    // init_drv_uDMA();
+    init_drv_uDMA();
     while(1){
         printf_user(uiBase,"test1\r\n");
         // printf_user(CONSOLE_UART,"%d",uDMAChannelSizeGet( UDMA_PRI_SELECT| 9)); 
-        // Uart_DMA_Trans(uiBase, test, 7);
+        Uart_DMA_Trans(uiBase, test, 7);
         delay_ms(500);
     }
 }
