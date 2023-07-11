@@ -14,9 +14,9 @@
  * ****************************************************************************************************************************
  */
 /*----testbench是否启用----*/
-#define         TEST_BENCH      1
-/*是否使用卡尔曼滤波*/
-#define         USE_KALMAN      0
+#define         TEST_BENCH      0
+/*是否对IMU数据进行滤波*/
+#define         USE_IMU_FILTER      1
 /*滤波器参数*/
 #define         FILTER_FREQ_IMU_AX     50.0F
 #define         FILTER_FREQ_IMU_AY     50.0F

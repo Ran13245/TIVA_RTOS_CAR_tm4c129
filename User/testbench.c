@@ -183,9 +183,9 @@ void test_imu(void){
         // DataScope_Load(imu_data.g_y*100);
         // DataScope_Load(imu_data.g_z*100);
         // DataScope();
-
+printf_user(WAVE_UART,"%.2f,%.2f,%.2f\n",add.g_x,add.g_y,add.g_z);
         // printf_user(WAVE_UART,"%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n",imu_data.a_x,imu_data.a_y,imu_data.a_z,imu_data.g_x,imu_data.g_y,imu_data.g_z);
-        printf_user(WAVE_UART,"%.2f,%.2f,%.2f\n",add.g_x,add.g_y,add.g_z);
+        
         // printf_user(WAVE_UART,"\r\n");
         delay_ms(TASK_ITV_IMU);
     }    

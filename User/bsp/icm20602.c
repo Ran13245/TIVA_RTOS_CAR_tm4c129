@@ -7,7 +7,7 @@
 #include "main.h"
 #include "config.h"
 #include "user_filter.h"
-
+#include "car_attitude.h"
 #include "FreeRTOS.h"
 #include "task.h"
 
@@ -41,7 +41,7 @@ enum Gscale
 
 void ICM20602_GetOffset(void){
     uint32_t i=0;
-    uint32_t cnt=5000;
+    uint32_t cnt=2000;
     float cnt_rec=1.0f/cnt;
     _imu_data_float tmp={0};
     for(i=0;i<cnt;i++){
@@ -69,14 +69,14 @@ void ICM20602_GetOffset(void){
  * @param  void
  */
 void init_ICM20602(void){
-    /* CLK_SEL=0 internal 20MHz, TEMP_DIS=0, SLEEP=0 */
-    ICM20602_WriteByte(ICM20602_PWR_MGMT_1, 0x00);
+    /*  TEMP_DIS=0, SLEEP=0 */
+    ICM20602_WriteByte(ICM20602_PWR_MGMT_1, 0x01);
     delay_ms(20);
     /* Enable Acc & Gyro */
     ICM20602_WriteByte(ICM20602_PWR_MGMT_2, 0x00);
     delay_ms(20);
-    /* 176Hz set TEMP_OUT_L, DLPF=3 (Fs=1KHz):0x03 */
-    ICM20602_WriteByte(ICM20602_CONFIG, 0x03);
+    /* 176Hz set TEMP_OUT_L, DLPF=4 (Fs=1KHz):0x04*/
+    ICM20602_WriteByte(ICM20602_CONFIG, 0x04);
     delay_ms(20);
     /*  SAMPLE_RATE = INTERNAL_SAMPLE_RATE / (1 + SMPLRT_DIV)
      *  Where INTERNAL_SAMPLE_RATE = 1 kHz */
@@ -87,7 +87,7 @@ void init_ICM20602(void){
     delay_ms(20);
     ICM20602_SetAccRange(AFS_2G);
     delay_ms(20);
-    ICM20602_SetGyroRange(GFS_1000DPS);
+    ICM20602_SetGyroRange(GFS_250DPS);
     delay_ms(20);
 }
 
@@ -190,6 +190,7 @@ void ICM20602_read_once(void){
         imu_data.g_y=biquadFilterApply(&imu_biquadFilter_g_x,(float)imu_data_raw.g_x*imu_solve.gyr_resolution)-imu_offset.g_y;
         imu_data.g_x=biquadFilterApply(&imu_biquadFilter_g_y,-(float)imu_data_raw.g_y*imu_solve.gyr_resolution)-imu_offset.g_x;
         imu_data.g_z=biquadFilterApply(&imu_biquadFilter_g_z,(float)imu_data_raw.g_z*imu_solve.gyr_resolution)-imu_offset.g_z;
+        car_attitude.yaw+=car_attitude.current_v_angle*TASK_ITV_IMU;
     }
     else{
         imu_data.a_y=(float)imu_data_raw.a_x*imu_solve.acc_resolution*IMU_ONE_G;
