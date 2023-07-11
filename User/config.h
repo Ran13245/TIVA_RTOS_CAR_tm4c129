@@ -14,7 +14,7 @@
  * ****************************************************************************************************************************
  */
 /*----testbench是否启用----*/
-#define         TEST_BENCH      0
+#define         TEST_BENCH      1
 /*是否使用卡尔曼滤波*/
 #define         USE_KALMAN      0
 /*滤波器参数*/
@@ -39,6 +39,8 @@
     // #define         Jetson_UART      UART0_BASE
     // #define         K210_UART        UART3_BASE
     // #define         OPENMV_UART      UART4_BASE
+    /*波形显示串口*/
+    #define         WAVE_UART        USB_UART
 #else 
     #define         USB_UART         UART4_BASE
     // #define         BLE_UART         UART1_BASE

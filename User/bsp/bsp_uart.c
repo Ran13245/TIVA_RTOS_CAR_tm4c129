@@ -76,7 +76,6 @@ static void _DeviceRxIntHandler(uint32_t ui32Base, uart_device* device);
  */
 void printf_user(uint32_t uiBase, const char *pcString, ...)
 {
-    taskENTER_CRITICAL();
     uiBase_stdio=uiBase;
     va_list vaArgP;
 
@@ -91,7 +90,6 @@ void printf_user(uint32_t uiBase, const char *pcString, ...)
     // We're finished with the varargs now.
     //
     va_end(vaArgP);
-    taskEXIT_CRITICAL();
 }       
 
 /*!

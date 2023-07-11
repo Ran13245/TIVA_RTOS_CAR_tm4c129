@@ -22,7 +22,7 @@ void Enter_Testbench(void){
     // test_pwm_output();
     // test_motor_input();
     // test_motor_pid();
-    // test_imu();
+    test_imu();
     // test_communicate();
     // test_car();
     // test_utils();
@@ -43,7 +43,7 @@ void test_print(void){
         printf_user(uiBase,"test1\r\n");
         // printf_user(CONSOLE_UART,"%d",uDMAChannelSizeGet( UDMA_PRI_SELECT| 9)); 
         Uart_DMA_Trans(uiBase, test, 7);
-        delay_ms(500);
+        delay_ms(5);
     }
 }
 
@@ -60,7 +60,7 @@ void test_wave(void){
 		DataScope_Load(motor_RightFront.EncSource);
 		DataScope_Load(motor_RightRear.EncSource);
 		DataScope();
-        delay_ms(50);
+        delay_ms(10);
     }
 }
 
@@ -149,25 +149,26 @@ void test_motor_pid(void){
 void test_imu(void){
     init_drv_HardwareI2C();
     init_ICM20602();
+    Set_LED(0,1,1);
     ICM20602_GetOffset();
     init_filter();
     // init_ist8310();
-    // _imu_data_float add={0};
+    _imu_data_float add={0};
     while (1)
     {
         // IST8310_read_once();
         ICM20602_read_once();
         // car_attitude.yaw=Kalman_Filter_z(car_attitude.yaw,imu_data.g_z,TASK_ITV_IMU*0.001);
-        printf_user(CONSOLE_UART,"ax:%.2f  ay:%.2f  az:%.2f  ",imu_data.a_x,imu_data.a_y,imu_data.a_z);
-        printf_user(CONSOLE_UART,"gx:%.2f  gy:%.2f  gz:%.2f  ",imu_data.g_x,imu_data.g_y,imu_data.g_z);
+        // printf_user(CONSOLE_UART,"ax:%.2f  ay:%.2f  az:%.2f  ",imu_data.a_x,imu_data.a_y,imu_data.a_z);
+        // printf_user(CONSOLE_UART,"gx:%.2f  gy:%.2f  gz:%.2f  ",imu_data.g_x,imu_data.g_y,imu_data.g_z);
         // printf_user(CONSOLE_UART,"mx:%.2f  my:%.2f  mz:%.2f  ",magnet.x,magnet.y,magnet.z);
         // printf_user(CONSOLE_UART,"yaw:%.2f  ",car_attitude.yaw);
         // add.a_x+=imu_data.a_x/TASK_ITV_IMU;
         // add.a_y+=imu_data.a_y/TASK_ITV_IMU;
         // add.a_z+=(imu_data.a_z-IMU_ONE_G)/TASK_ITV_IMU;
-        // add.g_x+=imu_data.g_x/TASK_ITV_IMU;
-        // add.g_y+=imu_data.g_y/TASK_ITV_IMU;
-        // add.g_z+=imu_data.g_z/TASK_ITV_IMU;
+        add.g_x+=imu_data.g_x*0.001F*TASK_ITV_IMU;
+        add.g_y+=imu_data.g_y*0.001F*TASK_ITV_IMU;
+        add.g_z+=imu_data.g_z*0.001F*TASK_ITV_IMU;
 
         // DataScope_Load(add.a_x);
         // DataScope_Load(add.a_y);
@@ -182,7 +183,10 @@ void test_imu(void){
         // DataScope_Load(imu_data.g_y*100);
         // DataScope_Load(imu_data.g_z*100);
         // DataScope();
-        printf_user(CONSOLE_UART,"\r\n");
+
+        // printf_user(WAVE_UART,"%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n",imu_data.a_x,imu_data.a_y,imu_data.a_z,imu_data.g_x,imu_data.g_y,imu_data.g_z);
+        printf_user(WAVE_UART,"%.2f,%.2f,%.2f\n",add.g_x,add.g_y,add.g_z);
+        // printf_user(WAVE_UART,"\r\n");
         delay_ms(TASK_ITV_IMU);
     }    
 }
@@ -212,14 +216,16 @@ void test_communicate(void){
 void test_car(void){
     init_drv_PWM();
     init_motor();
-    Motor_Set_V_Enc_All(0,0,0,0);
-    Set_Car_Start();
     init_Car_Attitude();
-    car_attitude.target_v_angle=5;
+    Set_Car_Attitude(300,0);
     while (1)
     {
-        Car_Attitude_Update_Input();
-        Car_Attitude_Update_Output();
+        Motor_Update_Input_All();
+		Car_Attitude_Update_Input();
+		
+		Car_Attitude_Update_Output();
+		Motor_Update_Output_All();
+        
         DataScope_Load(car_attitude.current_v_angle);
 		DataScope();
         delay_ms(TASK_ITV_CAR);

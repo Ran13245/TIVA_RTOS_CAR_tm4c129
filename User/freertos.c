@@ -133,7 +133,6 @@ void Task_9axisService(void* pvParameters){
 		vTaskDelayUntil( &xLastWakeTime, xFrequency );
 		// IST8310_read_once();
 		ICM20602_read_once();
-		// car_attitude.yaw=Kalman_Filter_z(car_attitude.yaw,imu_data.g_z,TASK_ITV_IMU*0.001);
 	}
 }
 
