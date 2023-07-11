@@ -48,21 +48,42 @@ typedef struct __motor
     float duty;
 }motor;
 
+typedef enum __motor_choice{
+    LEFT=0,
+    RIGHT
+}_motor_choice;
+
 extern motor motor_LeftFront;
 extern motor motor_LeftRear;
 extern motor motor_RightFront;
 extern motor motor_RightRear;
 
-void init_motor(void);
+#if (TEST_BENCH)
+
+extern motor* wheel_left;
+extern motor* wheel_right;
+/*对特定电机设置*/
 void Motor_Set_V_Real(motor* motor,float v_real);
 void Motor_Set_V_Enc(motor* motor,float v_enc);
 void Motor_Update_Output(motor* motor);
 void Motor_Update_Input(motor* motor);
 float Motor_Get_V_Real(motor* motor);
-
-void Motor_Update_Input_All(void);
-void Motor_Update_Output_All(void);
+void Motor_Clear_Distance(motor* motor);
+float Motor_Get_Distance(motor* motor);
+/*批量设置*/
 void Motor_Set_V_Real_All(float v_real_LF,float v_real_LR,float v_real_RF,float v_real_RR);
 void Motor_Set_V_Enc_All(float v_enc_LF,float v_enc_LR,float v_enc_RF,float v_enc_RR);
+void Motor_Judge_Accuracy(void);
+
+#endif
+/*对外接口*/
+void init_motor(void);
+void Motor_Update_Input_All(void);
+void Motor_Update_Output_All(void);
+
+float Wheel_Get_V_Real(_motor_choice choice);
+void Wheel_Set_V_Real(float v_real_left, float v_real_right);
+float Wheel_Get_Distance(_motor_choice choice);
+void Wheel_Clear_Distance(void);
 
 #endif

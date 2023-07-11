@@ -419,6 +419,11 @@
               <FileType>1</FileType>
               <FilePath>.\User\uart_handle.c</FilePath>
             </File>
+            <File>
+              <FileName>car_attitude.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User\car_attitude.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

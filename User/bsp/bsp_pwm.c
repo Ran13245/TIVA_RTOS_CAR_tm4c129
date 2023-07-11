@@ -56,7 +56,7 @@ void init_drv_PWM(void){
 
     /* Turn on PWM output pins */
 	// PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT | PWM_OUT_1_BIT | PWM_OUT_2_BIT | PWM_OUT_3_BIT | PWM_OUT_4_BIT, true);
-	PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT | PWM_OUT_1_BIT | PWM_OUT_2_BIT | PWM_OUT_3_BIT, true);
+	PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT | PWM_OUT_1_BIT | PWM_OUT_2_BIT | PWM_OUT_3_BIT, false);
 }
 
 
@@ -83,9 +83,14 @@ void Set_Duty(uint32_t Base,uint32_t PWMOut,float duty)
 		case PWM_OUT_6:	Gen=PWM_GEN_3,OutBits=PWM_OUT_6_BIT;	break;
 		case PWM_OUT_7:	Gen=PWM_GEN_3,OutBits=PWM_OUT_7_BIT;	break;
 	}
-	//配置占空比
-	PWMPulseWidthSet(Base, PWMOut, PWMGenPeriodGet(Base, Gen)*duty);
-	PWMOutputState(Base, OutBits, true);
+	if(duty==0.0F){
+		PWMOutputState(Base, OutBits, false);
+	}
+	else {
+		//配置占空比
+		PWMPulseWidthSet(Base, PWMOut, PWMGenPeriodGet(Base, Gen)*duty);
+		PWMOutputState(Base, OutBits, true);
+	}
 	//使能发生器模块
 	PWMGenEnable(Base, Gen);
 }

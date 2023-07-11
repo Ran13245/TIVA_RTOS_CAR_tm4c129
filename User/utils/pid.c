@@ -98,3 +98,12 @@ void Set_PID_Limit(pid*obj, float output_limit_inc, float output_limit_pos, floa
     obj->integral_error_limit=integral_error_limit;
 }
 
+/*!
+ * @brief 重置PID,用于状态转换时
+ * @param obj 
+ */
+void PID_Clear(pid* obj){
+    obj->IntegralError=0;
+    obj->LastError=0;
+    obj->PrevError=0;
+}

@@ -1,142 +1,130 @@
-/**
- * @file car_control.c
- * @author cbr (ran13245@outlook.com)
- * @brief 小车控制代码
- * @version 0.0
- * @date 2023-06-25
- * 
- * @copyright Copyright (c) 2023
- * 
- */
 #include "bsp.h"
 #include <math.h>
 
-float yaw=0;
-_car_attitude car_attitude={0};
+_car_control car_control;
 
-static float _abs(float a){
-    return a > 0 ? a : -a;
-}
+static void get_current_distance(void);
+static void get_current_spin_angle(void);
 
 /*!
- * @brief 防止漂移:同侧轮中与目标值差值小的视为无打滑
- * @param Front 
- * @param Rear 
- * @return 
- */
-static float real_v_anti_drifting(motor* Front,motor* Rear){
-    float target=Front->target_v_enc;
-    
-    if(_abs(Front->v_enc - target) > _abs(Rear->v_enc - target))
-        return Rear->v_real;
-    else
-        return Front->v_real;
-}
-
-/*!
- * @brief 初始化小车姿态
+ * @brief 初始化小车控制
  * @param  
  */
-void init_Car_Attitude(void){
-    Set_PID_Limit(&car_attitude.angle_pid,LIMIT_INC_TURN,LIMIT_POS_TURN,LIMIT_ITGR_TURN);
-    Set_PID(&car_attitude.angle_pid,P_TURN,I_TURN,D_TURN);
+void init_Car_Contorl(void){
+    Set_PID_Limit(&car_control.pid_line_pos,LIMIT_INC_POS,LIMIT_POS_POS,LIMIT_ITGR_POS);
+    Set_PID_Limit(&car_control.pid_spin,LIMIT_INC_SPIN,LIMIT_POS_SPIN,LIMIT_ITGR_SPIN);
+    Set_PID(&car_control.pid_line_pos,P_POS,I_POS,D_POS);
+    Set_PID(&car_control.pid_spin,P_SPIN,I_SPIN,D_SPIN);
 }
 
 /*!
- * @brief 更新小车当前姿态
+ * @brief 控制小车
+ *  自动选择模式,
+ *      全为0停止
+ *      只有y不为0走直线
+ *      只有x,y不为0去指定点
+ *      只有x,angle原地旋转,x表示旋转半径,不分正负,可为0
+ *      全不为0非法,停止
+ *  以前轮中点为原点,中轴向前为y正向,右侧为x正向
+ * @param x 目标点x值
+ * @param y 目标点y值
+ * @param angle 
+ */
+void Set_Car_Control(float x, float y, float angle){
+    if(x==0 && y!=0 && angle==0){
+        car_control.mode=GO_LINE;
+        car_control.target_line_distance=y;
+    }
+    else if(x!=0 && y!=0 && angle==0){
+        car_control.mode=TO_POINT;
+        car_control.to_point_parameter.dir=x<0?1.0F:-1.0F;
+        x=fabsf(x);
+        car_control.to_point_parameter.R=(x*x+y*y)/(2*x);
+        car_control.target_line_distance=car_control.to_point_parameter.R * asin(y/car_control.to_point_parameter.R);
+        Wheel_Clear_Distance();
+    }
+    else if(y==0 && angle!=0){
+        car_control.mode=SPIN;
+        car_control.target_spin_angle=angle;
+        car_control.spin_parameter.start_yaw=car_attitude.yaw;
+        car_control.spin_parameter.r=fabsf(x);
+        car_control.spin_parameter.circles=0;
+    }
+    else{
+        car_control.mode=STOP;
+    }
+}
+
+/*!
+ * @brief 更新小车控制当前状态
  * @param  
  */
-void Car_Attitude_Update_Input(void){
-car_attitude.updated=1;
-#if USE_4_MOTOR
-    float left,right;
-    left=real_v_anti_drifting(&motor_LeftFront,&motor_LeftRear);
-    right=real_v_anti_drifting(&motor_RightFront,&motor_RightRear);
-        car_attitude.current_v_line=0.5F*(left+right);
-        car_attitude.current_v_z=0.5F*(right-left); 
-    #if V_DEGREE_FROM_IMU
-        car_attitude.current_v_angle=imu_data.g_z;//从IMU处获得角速度
-    #else
-        car_attitude.current_v_angle=car_attitude.current_v_z*FRAME_W_HALF_REC*RAD_TO_DEGREE;//用编码器算出小车角速度
-    #endif
+void Car_Control_Update_Input(void){
+    switch (car_control.mode)
+    {
+        case GO_LINE:{
+            get_current_distance();
+            break;
+        }
+            
+        case TO_POINT:{
+            get_current_distance();
+            break;
+        }
+            
+        case SPIN:{
+            get_current_spin_angle();
+            break;
+        }
+            
+        default:{
+            break;
+        }
+    }
+}
 
-#else
-        car_attitude.current_v_line=0.5F*(motor_LeftFront.v_real+motor_RightFront.v_real);
-        car_attitude.current_v_z=0.5F*(motor_RightFront.v_real-motor_LeftFront.v_real);
-    #if V_DEGREE_FROM_IMU
-        car_attitude.current_v_angle=imu_data.g_z;//从IMU处获得角速度
-    #else
-        car_attitude.current_v_angle=car_attitude.current_v_z*FRAME_W_HALF_REC*RAD_TO_DEG;//用编码器算出小车角速度
-    #endif
-
+/*!
+ * @brief 更新小车控制输出
+ * @param  
+ */
+void Car_Control_Update_Output(void){
+#if     USE_CAR_CONTROL
+    float target_v_line,target_v_angle;
+    switch (car_control.mode)
+    {
+        case GO_LINE:{
+            target_v_line+=PID_Cal_Inc(&car_control.pid_line_pos,car_control.current_line_distance,car_control.target_line_distance);
+            Set_Car_Attitude(target_v_line,0);
+            break;
+        }
+            
+        case TO_POINT:{
+            target_v_line+=PID_Cal_Inc(&car_control.pid_line_pos,car_control.current_line_distance,car_control.target_line_distance);
+            target_v_angle=car_control.to_point_parameter.dir * target_v_line / car_control.to_point_parameter.R * RAD_TO_DEGREE;
+            Set_Car_Attitude(target_v_line,target_v_angle);
+            break;
+        }
+            
+        case SPIN:{
+            target_v_angle+=PID_Cal_Inc(&car_control.pid_spin,car_control.current_spin_angle,car_control.target_spin_angle);
+            target_v_line=fabsf(target_v_angle)*DEGREE_TO_RAD*car_control.spin_parameter.r;
+            Set_Car_Attitude(target_v_angle,target_v_angle);
+            break;
+        }
+            
+        default:{
+            Set_Car_Attitude(0,0);
+            break;
+        }
+    }
 #endif
 }
 
-/*!
- * @brief 更新小车姿态输出,增量式PID实现角速度环
- * @param  
- */
-void Car_Attitude_Update_Output(void){
-    static float v_left=0;
-    static float v_right=0;
-    if(car_attitude.flag_stop){
-        car_attitude.target_v_z=0;
-        v_left=0;
-        v_right=0;
-    }
-    else {
-        v_left=car_attitude.target_v_line-car_attitude.target_v_z;
-        v_right=car_attitude.target_v_line+car_attitude.target_v_z;
-    }
-    Motor_Set_V_Real_All(v_left,v_left,v_right,v_right);
+void get_current_distance(void){
+    car_control.current_line_distance = 0.5F*(Wheel_Get_Distance(LEFT)+Wheel_Get_Distance(RIGHT));
 }
 
-
-/*!
- * @brief 设置小车姿态
- * @param v_line_target 目标直线速度,mm/s
- * @param v_angle_target 目标角速度,degree/s
- */
-void Set_Car_Attitude(float v_line_target,float v_angle_target){
-    car_attitude.target_v_line=v_line_target;
-    car_attitude.target_v_angle=v_angle_target;
-    car_attitude.target_v_z=v_angle_target*FRAME_W_HALF*DEGREE_TO_RAD;
-    if(car_attitude.target_v_line==0 && car_attitude.target_v_angle==0)Set_Car_Stop();
-    else Set_Car_Start();
+void get_current_spin_angle(void){
+    car_control.current_spin_angle = car_control.spin_parameter.circles*360.0F + car_attitude.yaw - car_control.spin_parameter.start_yaw;
 }
-
-
-/*!
- * @brief 设置小车姿态 包括v_z
- * @param v_line_target 目标直线速度 mm/s
- * @param v_z   旋转补偿速度mm/s
- */
-void Set_Car_Attitude_With_Vz(float v_line_target,float v_z){
-    car_attitude.target_v_line=v_line_target;
-    car_attitude.target_v_z=v_z;
-    car_attitude.target_v_angle=v_z*FRAME_W_HALF_REC*RAD_TO_DEGREE;
-    if(car_attitude.target_v_line==0 && car_attitude.target_v_z==0)Set_Car_Stop();
-    else Set_Car_Start();
-}
-
-/*!
- * @brief 设置小车停止
- * @param  
- */
-void Set_Car_Stop(void){
-    car_attitude.flag_stop=1;
-}
-
-/*!
- * @brief 设置小车启动
- * @param  
- */
-void Set_Car_Start(void){
-    car_attitude.flag_stop=0;
-}
-
-// void Set_Car_Rotate(float angle){
-//     static float current_yaw;
-//     current_yaw = car_attitude.yaw;
-// }
 

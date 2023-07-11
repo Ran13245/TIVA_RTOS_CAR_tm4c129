@@ -1,52 +1,50 @@
-/**
- * @file car_control.h
- * @author cbr (ran13245@outlook.com)
- * @brief 小车控制代码
- * @version 0.0
- * @date 2023-06-25
- * 
- * @copyright Copyright (c) 2023
- * 
- */
-
-#ifndef __CAR_CONTROL_H_
-#define __CAR_CONTROL_H_
+#ifndef __CAR_CONTOL_H_
+#define __CAR_CONTOL_H_
 
 #include <stdint.h>
 #include <stdbool.h>
 #include "pid.h"
 
+typedef enum __car_mode{
+    DISABLE=0,/*禁用,直接控制car_attitude姿态*/
+    STOP,/*静止*/
+    GO_LINE,/*走直线*/
+    TO_POINT,/*去指定点*/
+    SPIN/*原地转特定角度*/
+}_car_mode;
 
-#define RAD_TO_DEGREE   57.29578018F
-#define DEGREE_TO_RAD   0.01745329238F
-
-//左右轮距一半的倒数    单位mm^-1
-#define FRAME_W_HALF_REC (1.0F/FRAME_W_HALF)
- 
-
-typedef struct __car_attitude
+typedef struct __to_point_parameter
 {
-    float current_v_line;//当前线速度,mm/s
-    float current_v_angle;//当前角速度,degree/s
-    float current_v_z;//旋转补偿线速度,左右差速值的一半mm/s
-    float target_v_line;//目标线速度,mm/s
-    float target_v_angle;//目标角速度,degree/s
-    float target_v_z;//旋转补偿线速度,mm/s
-    float yaw;//偏航角
-    bool flag_stop;//小车是否停止
-    bool updated;//小车姿态是否更新
-    pid angle_pid;//角度PID
-}_car_attitude;
+    float dir;//旋转方向,以逆时针为1,顺时针为-1
+    float R;//运动半径
+}_to_point_parameter;
 
-extern _car_attitude car_attitude;
+typedef struct __spin_parameter
+{
+    float r;//旋转半径
+    int16_t circles;//YAW数据溢出次数,正为360->0(逆时针)
+    float start_yaw;//旋转开始时的偏航角
+}_spin_parameter;
 
 
-void Car_Attitude_Update_Output(void);
-void Car_Attitude_Update_Input(void);
-void Set_Car_Attitude(float v_line_target,float v_angle_target);
-void init_Car_Attitude(void);
-void Set_Car_Attitude_With_Vz(float v_line_target,float v_z);
-void Set_Car_Stop(void);
-void Set_Car_Start(void);
+typedef struct __car_control
+{
+    _car_mode mode;
+    float target_line_distance;
+    float current_line_distance;
+    pid pid_line_pos;
+    float target_spin_angle;//注意旋转角度和YAW不同
+    float current_spin_angle;
+    pid pid_spin;
+    _to_point_parameter to_point_parameter;
+    _spin_parameter spin_parameter;
+}_car_control;
+
+extern _car_control car_control;
+
+void init_Car_Contorl(void);
+void Set_Car_Control(float x, float y, float angle);
+void Car_Control_Update_Input(void);
+void Car_Control_Update_Output(void);
 
 #endif

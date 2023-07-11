@@ -35,7 +35,7 @@ void Set_PID(pid* obj, float p, float i, float d);
 void Set_PID_Limit(pid*obj, float output_limit_inc, float output_limit_pos, float integral_error_limit);
 float PID_Cal_Inc(pid *obj, float current, float target);
 float PID_Cal_Pos(pid *obj, float current, float target);
-
+void PID_Clear(pid* obj);
 
 #endif
 

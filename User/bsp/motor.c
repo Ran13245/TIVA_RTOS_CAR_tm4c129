@@ -17,13 +17,32 @@
 #include "driverlib/gpio.h"
 #include "hw_memmap.h"
 #include "driverlib/pwm.h"
-#include "car_control.h"
+#include "car_attitude.h"
 #include "config.h"
 
 motor motor_LeftFront={0};
 motor motor_LeftRear={0};
 motor motor_RightFront={0};
 motor motor_RightRear={0};
+
+/*准确轮,只能用来读取,不能用来写入*/
+motor* wheel_left;
+motor* wheel_right;
+
+#if (!TEST_BENCH)
+static void Motor_Set_V_Real(motor* motor,float v_real);
+static void Motor_Set_V_Enc(motor* motor,float v_enc);
+static void Motor_Update_Output(motor* motor);
+static void Motor_Update_Input(motor* motor);
+static float Motor_Get_V_Real(motor* motor);
+static void Motor_Clear_Distance(motor* motor);
+static float Motor_Get_Distance(motor* motor);
+
+static void Motor_Set_V_Real_All(float v_real_LF,float v_real_LR,float v_real_RF,float v_real_RR);
+//static void Motor_Set_V_Enc_All(float v_enc_LF,float v_enc_LR,float v_enc_RF,float v_enc_RR);
+static void Motor_Judge_Accuracy(void);
+#endif
+
 
 /*!
  * @brief 绝对值,输出限幅
@@ -52,6 +71,9 @@ void init_motor(void){
     motor_LeftRear.dir=LR_DIR;
     motor_RightFront.dir=RF_DIR;
     motor_RightRear.dir=RR_DIR;
+
+    wheel_left=&motor_LeftFront;
+    wheel_right=&motor_RightFront;
 
     Set_PID_Limit(&motor_LeftFront.v_pid,LIMIT_INC_LF,LIMIT_POS_LF,LIMIT_ITGR_LF);
     Set_PID_Limit(&motor_LeftRear.v_pid,LIMIT_INC_LR,LIMIT_POS_LR,LIMIT_ITGR_LR);
@@ -136,6 +158,7 @@ void Motor_Update_Output(motor* motor){
     else{
         motor->duty+=ZOOM_PID_TO_DUTY*PID_Cal_Inc(&(motor->v_pid),motor->v_enc,motor->target_v_enc);
         motor->duty=duty_limit(motor->duty);
+        if(motor->dir){
             if(motor->duty > 0){
                 GPIOPinWrite(motor->DirBase1,motor->DirPin1,motor->DirPin1);
                 GPIOPinWrite(motor->DirBase2,motor->DirPin2,~(motor->DirPin2));
@@ -143,7 +166,20 @@ void Motor_Update_Output(motor* motor){
             else {
                 GPIOPinWrite(motor->DirBase1,motor->DirPin1,~(motor->DirPin1));
                 GPIOPinWrite(motor->DirBase2,motor->DirPin2,motor->DirPin2);
+                
             }
+        }
+        else{
+            if(motor->duty > 0){
+                GPIOPinWrite(motor->DirBase1,motor->DirPin1,~(motor->DirPin1));
+                GPIOPinWrite(motor->DirBase2,motor->DirPin2,motor->DirPin2);
+            }
+            else {
+                GPIOPinWrite(motor->DirBase1,motor->DirPin1,motor->DirPin1);
+                GPIOPinWrite(motor->DirBase2,motor->DirPin2,~(motor->DirPin2));
+                
+            }
+        }
     }
     Set_Duty(motor->PWMBase,motor->PWMOut,abs(motor->duty));
 }
@@ -160,6 +196,49 @@ void Motor_Update_Input(motor* motor){
     motor->EncSource=0;
 }
 
+
+/*!
+ * @brief 清除电机累计位置
+ * @param motor 
+ */
+void Motor_Clear_Distance(motor* motor){
+    motor->total_enc=0;
+}
+
+/*!
+ * @brief 获得电机累计位置,单位mm
+ * @param motor 
+ */
+float Motor_Get_Distance(motor* motor){
+    return motor->total_enc*ENC_EVERY_CIRCLE*WHEEL_PERIMETER;
+}
+
+/*!
+ * @brief 决定准确轮
+ * @param  
+ */
+void Motor_Judge_Accuracy(void){
+#if USE_4_MOTOR
+/*左*/
+    float target=wheel_left->target_v_enc;//前后轮的目标速度是一样的,选其一
+    if(abs(motor_LeftFront.v_enc - target) > abs(motor_LeftRear.v_enc - target))
+        wheel_left=&motor_LeftRear;
+    else 
+        wheel_left=&motor_LeftFront;
+/*右*/
+    target=wheel_right->target_v_enc;
+    if(abs(motor_RightFront.v_enc - target) > abs(motor_RightRear.v_enc - target))
+        wheel_right=&motor_RightRear;
+    else 
+        wheel_right=&motor_RightFront;
+#endif
+}
+
+
+/**
+ * @brief 批量设置***************************************************
+ * 
+ */
 /*!
  * @brief 更新所有电机速度
  * @param  
@@ -171,6 +250,8 @@ void Motor_Update_Input_All(void){
 #endif
     Motor_Update_Input(&motor_LeftFront);
     Motor_Update_Input(&motor_RightFront);
+
+    Motor_Judge_Accuracy();
 }
 
 /*!
@@ -203,7 +284,7 @@ void Motor_Set_V_Real_All(float v_real_LF,float v_real_LR,float v_real_RF,float 
 }
 
 /*!
- * @brief 批量设置电机编码器速度
+ * @brief 批量设置电机编码器速度,一般不用
  * @param v_enc_LF 
  * @param v_enc_LR 
  * @param v_enc_RF 
@@ -216,4 +297,57 @@ void Motor_Set_V_Enc_All(float v_enc_LF,float v_enc_LR,float v_enc_RF,float v_en
 #endif
     Motor_Set_V_Enc(&motor_LeftFront,v_enc_LF);
     Motor_Set_V_Enc(&motor_RightFront,v_enc_RF);
+}
+
+/**
+ * @brief 对外接口,已经过准确轮筛选
+ * 
+ */
+
+/*!
+ * @brief 获取左侧或右侧的速度,mm/s
+ * @param choice LEFT或RIGHT
+ * @return 速度,float
+ */
+float Wheel_Get_V_Real(_motor_choice choice){
+    if (choice == LEFT){
+        return Motor_Get_V_Real(wheel_left);
+    }
+    else{
+        return Motor_Get_V_Real(wheel_right);
+    }
+}
+
+/*!
+ * @brief 设置左右两侧的速度,mm/s
+ * @param v_real_left 
+ * @param v_real_right 
+ */
+void Wheel_Set_V_Real(float v_real_left, float v_real_right){
+    Motor_Set_V_Real_All(v_real_left,v_real_left,v_real_right,v_real_right);
+}
+
+/*!
+ * @brief 获取左侧或右侧的总距离,mm
+ * @param choice LEFT或RIGHT
+ * @return 距离,float
+ */
+float Wheel_Get_Distance(_motor_choice choice){
+    if (choice == LEFT){
+        return Motor_Get_Distance(wheel_left);
+    }
+    else {
+        return Motor_Get_Distance(wheel_right);
+    }
+}
+
+/*!
+ * @brief 清除距离累计
+ * @param  
+ */
+void Wheel_Clear_Distance(void){
+    Motor_Clear_Distance(&motor_LeftFront);
+    Motor_Clear_Distance(&motor_LeftRear);
+    Motor_Clear_Distance(&motor_RightFront);
+    Motor_Clear_Distance(&motor_RightRear);
 }

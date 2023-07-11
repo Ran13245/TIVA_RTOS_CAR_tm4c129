@@ -115,17 +115,18 @@ void DataScope_Load(float data){
 void DataScope(void)
 {   
 	//计数需要的变量
-	int Send_Count,i;
+	int Send_Count;
 
 	//打印几个数据就在这里改为几
 	Send_Count = DataScope_Data_Generate(cnt);
-	for( i = 0 ; i < Send_Count; i++) 
-	{	
+	// int i;
+	// for( i = 0 ; i < Send_Count; i++) 
+	// {	
 
-		printf_user(WAVE_UART,"%c", DataScope_OutPut_Buffer[i]); 
+	// 	printf_user(WAVE_UART,"%c", DataScope_OutPut_Buffer[i]); 
 
-	}
-	
+	// }
+	Uart_DMA_Trans(WAVE_UART,DataScope_OutPut_Buffer,Send_Count);
 
 	cnt=0;
 }

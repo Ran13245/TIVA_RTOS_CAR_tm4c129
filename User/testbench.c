@@ -12,16 +12,17 @@ void Enter_Testbench(void){
 	IntPriorityGroupingSet(3);
     init_drv_GPIO();
 	init_drv_UART();
+    init_drv_uDMA();
     IntMasterEnable();
-    // delay_ms(2000);//等待小车完全停止
-    test_print();
+    Set_LED(0,0,1);
+    delay_ms(2000);//等待小车完全停止
+    // test_print();
     // test_encoder();
     // test_wave();
     // test_pwm_output();
     // test_motor_input();
     // test_motor_pid();
     // test_imu();
-    // test_communicate();
     // test_communicate();
     // test_car();
     // test_utils();
@@ -59,7 +60,7 @@ void test_wave(void){
 		DataScope_Load(motor_RightFront.EncSource);
 		DataScope_Load(motor_RightRear.EncSource);
 		DataScope();
-        delay_ms(200);
+        delay_ms(50);
     }
 }
 
@@ -88,7 +89,7 @@ void test_pwm_output(void){
     init_drv_PWM();
     while (1)
     {
-        Set_Duty(PWM_LF_BASE,PWM_LF_OUT,0.2);
+        Set_Duty(PWM_RR_BASE,PWM_RR_OUT,0.5);
     }
     
 }
@@ -121,16 +122,16 @@ void test_motor_pid(void){
     init_drv_PWM();
     init_motor();
     Set_Car_Start();
-    // Motor_Set_V_Enc_All(0,0,0,-1000);
-    GPIOPinWrite(motor_RightRear.DirBase1,motor_RightRear.DirPin1,~(motor_RightRear.DirPin1));
-    GPIOPinWrite(motor_RightRear.DirBase2,motor_RightRear.DirPin2,(motor_RightRear.DirPin2));
-    Set_Duty(motor_RightRear.PWMBase,motor_RightRear.PWMOut,0.2);
+    Motor_Set_V_Enc_All(1000,0,0,0);
+    // GPIOPinWrite(motor_RightRear.DirBase1,motor_RightRear.DirPin1,~(motor_RightRear.DirPin1));
+    // GPIOPinWrite(motor_RightRear.DirBase2,motor_RightRear.DirPin2,(motor_RightRear.DirPin2));
+    // Set_Duty(motor_RightRear.PWMBase,motor_RightRear.PWMOut,0.2);
     while (1)
     {   
         // Motor_Update_Input(&motor_RightRear);
         // Motor_Update_Output(&motor_RightRear);
         Motor_Update_Input_All();
-        // Motor_Update_Output_All();
+        Motor_Update_Output_All();
         DataScope_Load(motor_LeftFront.v_enc*0.1F);
 		DataScope_Load(motor_LeftRear.v_enc*0.1F);
 		DataScope_Load(motor_RightFront.v_enc*0.1F);
@@ -151,13 +152,13 @@ void test_imu(void){
     ICM20602_GetOffset();
     init_filter();
     // init_ist8310();
-    _imu_data_float add={0};
+    // _imu_data_float add={0};
     while (1)
     {
         // IST8310_read_once();
         ICM20602_read_once();
         // car_attitude.yaw=Kalman_Filter_z(car_attitude.yaw,imu_data.g_z,TASK_ITV_IMU*0.001);
-        // printf_user(CONSOLE_UART,"ax:%.2f  ay:%.2f  az:%.2f  ",imu_data.a_x,imu_data.a_y,imu_data.a_z);
+        printf_user(CONSOLE_UART,"ax:%.2f  ay:%.2f  az:%.2f  ",imu_data.a_x,imu_data.a_y,imu_data.a_z);
         printf_user(CONSOLE_UART,"gx:%.2f  gy:%.2f  gz:%.2f  ",imu_data.g_x,imu_data.g_y,imu_data.g_z);
         // printf_user(CONSOLE_UART,"mx:%.2f  my:%.2f  mz:%.2f  ",magnet.x,magnet.y,magnet.z);
         // printf_user(CONSOLE_UART,"yaw:%.2f  ",car_attitude.yaw);
@@ -174,13 +175,13 @@ void test_imu(void){
         // DataScope_Load(add.g_x);
         // DataScope_Load(add.g_y);
         // DataScope_Load(add.g_z);
-        DataScope_Load(imu_data.a_x*100);
-        DataScope_Load(imu_data.a_y*100);
-        DataScope_Load((imu_data.a_z)*100);
-        DataScope_Load(imu_data.g_x*100);
-        DataScope_Load(imu_data.g_y*100);
-        DataScope_Load(imu_data.g_z*100);
-        DataScope();
+        // DataScope_Load(imu_data.a_x*100);
+        // DataScope_Load(imu_data.a_y*100);
+        // DataScope_Load((imu_data.a_z)*100);
+        // DataScope_Load(imu_data.g_x*100);
+        // DataScope_Load(imu_data.g_y*100);
+        // DataScope_Load(imu_data.g_z*100);
+        // DataScope();
         printf_user(CONSOLE_UART,"\r\n");
         delay_ms(TASK_ITV_IMU);
     }    

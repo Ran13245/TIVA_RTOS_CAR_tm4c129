@@ -14,7 +14,7 @@
  * ****************************************************************************************************************************
  */
 /*----testbench是否启用----*/
-#define         TEST_BENCH      1
+#define         TEST_BENCH      0
 /*是否使用卡尔曼滤波*/
 #define         USE_KALMAN      0
 /*滤波器参数*/
@@ -24,8 +24,8 @@
 #define         FILTER_FREQ_IMU_GX     25.0F
 #define         FILTER_FREQ_IMU_GY     25.0F
 #define         FILTER_FREQ_IMU_GZ     25.0F
-//是否从内部PID获得转向速度,0表示由外部上位机进行直接设置
-#define         USE_INTERNAL_V_Z         0
+/*是否使用积分级控制方式*/
+#define         USE_CAR_CONTROL         1
 
 
 /**
@@ -122,10 +122,15 @@
 //是否从IMU读得当前角速度
 #define         V_DEGREE_FROM_IMU       0
 
+//是否使用角速度PID
+#define         V_ANGLE_PID             1
+
 //每圈编码器数
 #define         ENC_EVERY_CIRCLE        1560
 //轮直径 mm
 #define         WHEEL_DIR               67
+//轮周长 mm
+#define         WHEEL_PERIMETER         210.4867096F
 
 //圈速=实际速度/周长=编码器速度/每圈编码器数
 //编码器速度/实际速度=每圈编码器数/周长         !!长度mm!!
@@ -160,21 +165,27 @@
 #define         LIMIT_INC_LR            500.0F
 #define         LIMIT_INC_RF            500.0F
 #define         LIMIT_INC_RR            500.0F
-#define         LIMIT_INC_TURN          10.0F
+#define         LIMIT_INC_POS           10.0F
+#define         LIMIT_INC_SPIN          10.0F
+#define         LIMIT_INC_V_ANGLE       10.0F
 
 //位置式PID限幅,PWM占空比100%对应PID的1000
 #define         LIMIT_POS_LF            (MAX_MOTOR_DUTY*1000)
 #define         LIMIT_POS_LR            (MAX_MOTOR_DUTY*1000)
 #define         LIMIT_POS_RF            (MAX_MOTOR_DUTY*1000)
 #define         LIMIT_POS_RR            (MAX_MOTOR_DUTY*1000)
-#define         LIMIT_POS_TURN          1.0F
+#define         LIMIT_POS_POS           1.0F
+#define         LIMIT_POS_SPIN          1.0F
+#define         LIMIT_POS_V_ANGLE       1.0F
 
 //位置式PID积分限幅
 #define         LIMIT_ITGR_LF           (MAX_MOTOR_DUTY*1000)
 #define         LIMIT_ITGR_LR           (MAX_MOTOR_DUTY*1000)
 #define         LIMIT_ITGR_RF           (MAX_MOTOR_DUTY*1000)
 #define         LIMIT_ITGR_RR           (MAX_MOTOR_DUTY*1000)
-#define         LIMIT_ITGR_TURN         1.0F
+#define         LIMIT_ITGR_POS          1.0F
+#define         LIMIT_ITGR_SPIN         1.0F
+#define         LIMIT_ITGR_V_ANGLE      1.0F
 
 /**
  * @brief PID参数
@@ -184,19 +195,25 @@
 #define         P_LR            0.05F
 #define         P_RF            0.05F
 #define         P_RR            0.05F
-#define         P_TURN          0.0F
+#define         P_POS           0.1F    //位置
+#define         P_SPIN          0.1F    //原地旋转
+#define         P_V_ANGLE       0.1F    //角速度
 
 #define         I_LF            0.01F
 #define         I_LR            0.01F
 #define         I_RF            0.01F
 #define         I_RR            0.01F
-#define         I_TURN          0.0F
+#define         I_POS           0.0F
+#define         I_SPIN          0.0F
+#define         I_V_ANGLE       0.0F
 
 #define         D_LF            0.0F
 #define         D_LR            0.0F
 #define         D_RF            0.0F
 #define         D_RR            0.0F
-#define         D_TURN          0.0F
+#define         D_POS           0.0F
+#define         D_SPIN          0.0F
+#define         D_V_ANGLE       0.0F
 
 
 

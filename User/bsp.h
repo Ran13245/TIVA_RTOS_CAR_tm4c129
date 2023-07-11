@@ -31,7 +31,6 @@
 #include "driverlib/udma.h"
 #include "driverlib/adc.h"
 
-#include "config.h"
 #include "main.h"
 #include "bsp_uart.h"
 #include "bsp_gpio.h"
@@ -46,9 +45,11 @@
 #include "uart_handle.h"
 #include "bluetooth.h"
 #include "protocol.h"
+#include "car_attitude.h"
 #include "car_control.h"
 #include "user_filter.h"
 
-
+#include "config.h"
+#include "const.h"
 
 #endif
