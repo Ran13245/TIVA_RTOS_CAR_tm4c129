@@ -21,33 +21,34 @@ void init_Car_Contorl(void){
  * @brief 控制小车
  *  自动选择模式,
  *      全为0停止
- *      只有y不为0走直线
+ *      只有x不为0走直线
  *      只有x,y不为0去指定点
- *      只有x,angle原地旋转,x表示旋转半径,不分正负,可为0
+ *      只有y,angle原地旋转,y表示旋转半径,不分正负,可为0
  *      全不为0非法,停止
- *  以前轮中点为原点,中轴向前为y正向,右侧为x正向
- * @param x 目标点x值
- * @param y 目标点y值
- * @param angle 
+ *  以前轮中点为原点,中轴向前为x正向,左侧为y正向
+ * @param x 目标点x值 mm
+ * @param y 目标点y值 mm
+ * @param angle degree
  */
 void Set_Car_Control(float x, float y, float angle){
-    if(x==0 && y!=0 && angle==0){
+    if(y==0 && x!=0 && angle==0){
         car_control.mode=GO_LINE;
-        car_control.target_line_distance=y;
-    }
-    else if(x!=0 && y!=0 && angle==0){
-        car_control.mode=TO_POINT;
-        car_control.to_point_parameter.dir=x<0?1.0F:-1.0F;
-        x=fabsf(x);
-        car_control.to_point_parameter.R=(x*x+y*y)/(2*x);
-        car_control.target_line_distance=car_control.to_point_parameter.R * asin(y/car_control.to_point_parameter.R);
+        car_control.target_line_distance=x;
         Wheel_Clear_Distance();
     }
-    else if(y==0 && angle!=0){
+    else if(y!=0 && x!=0 && angle==0){
+        car_control.mode=TO_POINT;
+        car_control.to_point_parameter.dir=y>0?1.0F:-1.0F;
+        y=fabsf(y);
+        car_control.to_point_parameter.R=(x*x+y*y)/(2*y);
+        car_control.target_line_distance=car_control.to_point_parameter.R * asin(x/car_control.to_point_parameter.R);
+        Wheel_Clear_Distance();
+    }
+    else if(x==0 && angle!=0){
         car_control.mode=SPIN;
         car_control.target_spin_angle=angle;
         car_control.spin_parameter.start_yaw=car_attitude.yaw;
-        car_control.spin_parameter.r=fabsf(x);
+        car_control.spin_parameter.r=fabsf(y);
         car_control.spin_parameter.circles=0;
     }
     else{
@@ -64,16 +65,25 @@ void Car_Control_Update_Input(void){
     {
         case GO_LINE:{
             get_current_distance();
+            if(fabsf(car_control.current_line_distance - car_control.target_line_distance) < 2.0F) {
+                Set_Car_Control(0,0,0);
+            }
             break;
         }
             
         case TO_POINT:{
             get_current_distance();
+            if(fabsf(car_control.current_line_distance - car_control.target_line_distance) < 2.0F) {
+                Set_Car_Control(0,0,0);
+            }
             break;
         }
             
         case SPIN:{
             get_current_spin_angle();
+            if(fabsf(car_control.current_spin_angle - car_control.target_spin_angle) < 0.5F) {
+                Set_Car_Control(0,0,0);
+            }
             break;
         }
             

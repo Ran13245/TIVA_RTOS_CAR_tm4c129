@@ -40,15 +40,6 @@ void Car_Attitude_Update_Input(void){
         car_attitude.current_v_angle=0.5F*(right-left)*FRAME_W_HALF_REC*RAD_TO_DEGREE;//用编码器算出小车角速度
     #endif
 
-    // car_attitude.yaw+=car_attitude.current_v_angle*TASK_ITV_CAR;
-    if(car_attitude.yaw < 0){
-        car_attitude.yaw+=360.0F;
-        car_control.spin_parameter.circles-=1;
-    }
-    if(car_attitude.yaw >= 360.0F){
-        car_attitude.yaw-=360.0F;
-        car_control.spin_parameter.circles+=1;
-    }
 }
 
 /*!
@@ -120,3 +111,15 @@ void Set_Car_Start(void){
     car_attitude.flag_stop=0;
 }
 
+void Car_Attitude_Yaw_Update(float v_angle,float time){
+    car_attitude.yaw+=v_angle*time;
+    
+    if(car_attitude.yaw < 0){
+        car_attitude.yaw+=360.0F;
+        car_control.spin_parameter.circles-=1;
+    }
+    if(car_attitude.yaw >= 360.0F){
+        car_attitude.yaw-=360.0F;
+        car_control.spin_parameter.circles+=1;
+    }
+}

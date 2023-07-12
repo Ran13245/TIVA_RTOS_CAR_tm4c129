@@ -67,6 +67,7 @@ static void BSP_Init(void){
 	printf_user(CONSOLE_UART,"Pass\r\n");
 	init_Car_Attitude();
 	Set_Car_Attitude(0,0);
+	init_Car_Contorl();
 	// BLE_AT_Set();
 	delay_ms(200);
 }

@@ -35,7 +35,7 @@
 /*设备串口,不用时注释掉*/
 #if (!TEST_BENCH)
     #define         USB_UART         UART4_BASE
-    // #define         BLE_UART         UART1_BASE
+    #define         BLE_UART         UART1_BASE
     // #define         Jetson_UART      UART0_BASE
     // #define         K210_UART        UART3_BASE
     // #define         OPENMV_UART      UART4_BASE
@@ -43,7 +43,7 @@
     #define         WAVE_UART        USB_UART
 #else 
     #define         USB_UART         UART4_BASE
-    // #define         BLE_UART         UART1_BASE
+    #define         BLE_UART         UART1_BASE
     // #define         Jetson_UART      UART0_BASE
     // #define         K210_UART        UART3_BASE
     // #define         OPENMV_UART      UART4_BASE
@@ -53,7 +53,7 @@
 #endif
 
 /*终端串口*/
-#define         CONSOLE_UART     USB_UART
+#define         CONSOLE_UART     BLE_UART
 
 /*串口波特率*/
 #define         BAUD_RATE_UART0     115200
@@ -122,7 +122,7 @@
 #define         USE_4_TIMES_ENCODER     1
 
 //是否从IMU读得当前角速度
-#define         V_DEGREE_FROM_IMU       0
+#define         V_DEGREE_FROM_IMU       1
 
 //是否使用角速度PID
 #define         V_ANGLE_PID             1
@@ -167,9 +167,9 @@
 #define         LIMIT_INC_LR            500.0F
 #define         LIMIT_INC_RF            500.0F
 #define         LIMIT_INC_RR            500.0F
-#define         LIMIT_INC_POS           10.0F
-#define         LIMIT_INC_SPIN          10.0F
-#define         LIMIT_INC_V_ANGLE       10.0F
+#define         LIMIT_INC_POS           300.0F
+#define         LIMIT_INC_SPIN          90.0F
+#define         LIMIT_INC_V_ANGLE       200.0F
 
 //位置式PID限幅,PWM占空比100%对应PID的1000
 #define         LIMIT_POS_LF            (MAX_MOTOR_DUTY*1000)
@@ -197,9 +197,9 @@
 #define         P_LR            0.05F
 #define         P_RF            0.05F
 #define         P_RR            0.05F
-#define         P_POS           0.1F    //位置
-#define         P_SPIN          0.1F    //原地旋转
-#define         P_V_ANGLE       0.1F    //角速度
+#define         P_POS           1.0F    //位置
+#define         P_SPIN          2.0F    //原地旋转
+#define         P_V_ANGLE       0.5F    //角速度
 
 #define         I_LF            0.01F
 #define         I_LR            0.01F

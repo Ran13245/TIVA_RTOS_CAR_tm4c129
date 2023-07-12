@@ -13,8 +13,8 @@
 
 void UartCallBack_USB(void){
 #ifdef USB_UART
-
-    printf_user(CONSOLE_UART,"%s\r\n",uart_usb.receive);
+    Uart_DMA_Trans(USB_UART,uart_usb.receive,uart_usb.len);
+    // Uart_DMA_Trans(BLE_UART,&uart_usb.receive[1],uart_usb.len-2);//设置蓝牙用
 #endif
 }
 

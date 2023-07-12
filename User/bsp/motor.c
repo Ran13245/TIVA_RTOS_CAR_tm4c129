@@ -189,10 +189,12 @@ void Motor_Update_Output(motor* motor){
  * @param motor 电机obj
  */
 void Motor_Update_Input(motor* motor){
+    if(!motor->dir){
+        motor->EncSource=-motor->EncSource;
+    }
     motor->v_enc=motor->EncSource*RTOS_MOTOR_TIME_ITV_REC;
-    motor->total_enc+=motor->EncSource;
-    if(!motor->dir)motor->v_enc = -motor->v_enc;
     motor->v_real=motor->v_enc*V_ENC_TO_REAL;
+    motor->total_enc+=motor->EncSource;
     motor->EncSource=0;
 }
 
@@ -210,7 +212,7 @@ void Motor_Clear_Distance(motor* motor){
  * @param motor 
  */
 float Motor_Get_Distance(motor* motor){
-    return motor->total_enc*ENC_EVERY_CIRCLE*WHEEL_PERIMETER;
+    return motor->total_enc*1.0F/ENC_EVERY_CIRCLE*WHEEL_PERIMETER;
 }
 
 /*!

@@ -190,7 +190,7 @@ void ICM20602_read_once(void){
         imu_data.g_y=biquadFilterApply(&imu_biquadFilter_g_x,(float)imu_data_raw.g_x*imu_solve.gyr_resolution)-imu_offset.g_y;
         imu_data.g_x=biquadFilterApply(&imu_biquadFilter_g_y,-(float)imu_data_raw.g_y*imu_solve.gyr_resolution)-imu_offset.g_x;
         imu_data.g_z=biquadFilterApply(&imu_biquadFilter_g_z,(float)imu_data_raw.g_z*imu_solve.gyr_resolution)-imu_offset.g_z;
-        car_attitude.yaw+=car_attitude.current_v_angle*TASK_ITV_IMU;
+        Car_Attitude_Yaw_Update(imu_data.g_z,0.001F*TASK_ITV_IMU);
     }
     else{
         imu_data.a_y=(float)imu_data_raw.a_x*imu_solve.acc_resolution*IMU_ONE_G;

@@ -45,5 +45,6 @@ void init_Car_Attitude(void);
 // void Set_Car_Attitude_With_Vz(float v_line_target,float v_z);
 void Set_Car_Stop(void);
 void Set_Car_Start(void);
+void Car_Attitude_Yaw_Update(float v_angle,float time);
 
 #endif
