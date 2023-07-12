@@ -429,6 +429,11 @@
               <FileType>1</FileType>
               <FilePath>.\User\tim_handle.c</FilePath>
             </File>
+            <File>
+              <FileName>key_handle.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User\key_handle.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
