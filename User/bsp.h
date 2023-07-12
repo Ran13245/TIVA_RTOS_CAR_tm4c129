@@ -46,6 +46,7 @@
 #include "icm20602.h"
 #include "uart_handle.h"
 #include "tim_handle.h"
+#include "key_handle.h"
 #include "bluetooth.h"
 #include "protocol.h"
 #include "car_attitude.h"

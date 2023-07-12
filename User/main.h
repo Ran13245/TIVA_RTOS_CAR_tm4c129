@@ -83,10 +83,13 @@
 #define EncB_RightRear_GPIO_IntSource INT_GPIOG
 
 #define KEY0_Pin GPIO_PIN_2
+#define KEY0_IntPin GPIO_INT_PIN_2
 #define KEY0_GPIO_Port GPIO_PORTE_BASE
 #define KEY1_Pin GPIO_PIN_1
+#define KEY1_IntPin GPIO_INT_PIN_1
 #define KEY1_GPIO_Port GPIO_PORTE_BASE
 #define KEY2_Pin GPIO_PIN_0
+#define KEY2_IntPin GPIO_INT_PIN_0
 #define KEY2_GPIO_Port GPIO_PORTE_BASE
 
 #define LF_BASE         GPIO_PORTF_BASE

@@ -15,6 +15,7 @@
 
 #include "FreeRTOS.h"
 #include "task.h"
+#include "queue.h"
 
 /**
  * 关于硬件中断优先级的设置:
@@ -293,7 +294,24 @@ void UART4_IRQHandler(void)
 
 void EXTI_PORTE_IRQHandler(void){
 	uint32_t IntPins=GPIOIntStatus(GPIO_PORTE_BASE,true);
-	
+	static uint8_t key=0;
+	extern QueueHandle_t queue_key;
+	BaseType_t xHigherPriorityTaskWoken = pdFALSE; 
+	if(IntPins&KEY0_IntPin){
+		key=0;
+		xQueueSendFromISR(queue_key,&key,&xHigherPriorityTaskWoken);
+	}
+	if(IntPins&KEY1_IntPin){
+		key=1;
+		xQueueSendFromISR(queue_key,&key,&xHigherPriorityTaskWoken);
+	}
+	if(IntPins&KEY2_IntPin){
+		key=2;
+		xQueueSendFromISR(queue_key,&key,&xHigherPriorityTaskWoken);
+	}
+
+	GPIOIntClear(GPIO_PORTE_BASE, IntPins);
+	// portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
 #if USE_4_TIMES_ENCODER

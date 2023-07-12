@@ -11,11 +11,13 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "semphr.h"
+#include "queue.h"
 #include "main.h"
 
 #include "bsp.h"
 
 SemaphoreHandle_t semphr_uart_receive = NULL;
+QueueHandle_t queue_key = NULL;
 
 static TaskHandle_t AppTaskCreate_Handle = NULL;
 static TaskHandle_t TaskHandle_LEDBlink = NULL;
@@ -24,6 +26,7 @@ static TaskHandle_t TaskHandle_UartHandle = NULL;
 static TaskHandle_t TaskHandle_CarAttitude = NULL;
 static TaskHandle_t TaskHandle_VoltageUpdate = NULL;
 static TaskHandle_t TaskHandle_DataUpload = NULL;
+static TaskHandle_t TaskHandle_Key = NULL;
 
 static void AppTaskCreate(void* pvParameters);
 static void Task_LEDBlink(void* pvParameters);
@@ -32,7 +35,7 @@ static void Task_UartHandle(void* pvParameters);
 static void Task_CarAttitude(void* pvParameters);
 static void Task_VoltageUpdate(void* pvParameters);
 static void Task_DataUpload(void* pvParameters);
-
+static void Task_Key(void* pvParameters);
 
 /*!
  * @brief RTOS初始化,启动引导程序
@@ -77,6 +80,10 @@ void AppTaskCreate(void* pvParameters){
 	if(pdPASS == xReturn)
 		printf_user(CONSOLE_UART,"DataUpload\r\n");
 
+	xReturn = xTaskCreate(Task_Key,"LEDBlink",128,NULL,6,&TaskHandle_Key);
+	if(pdPASS == xReturn);
+		printf_user(CONSOLE_UART,"Key\r\n");
+
 	xReturn = xTaskCreate(Task_LEDBlink,"LEDBlink",128,NULL,1,&TaskHandle_LEDBlink);
 	if(pdPASS == xReturn);
 		printf_user(CONSOLE_UART,"LEDBlink\r\n");
@@ -91,6 +98,16 @@ void AppTaskCreate(void* pvParameters){
 		printf_user(CONSOLE_UART,"uart_receive\r\n");
 
 	printf_user(CONSOLE_UART,"-Semaphore List End-\r\n");
+	
+/*队列创建*/
+	printf_user(CONSOLE_UART,"-Queue List-\r\n");
+
+	queue_key = xQueueCreate(1,1);
+	if(queue_key != NULL)
+		printf_user(CONSOLE_UART,"key\r\n");
+
+	printf_user(CONSOLE_UART,"-Queue List End-\r\n");
+
 
 	vTaskDelete(AppTaskCreate_Handle);
 	taskEXIT_CRITICAL();//退出临界区
@@ -197,6 +214,21 @@ void Task_DataUpload(void* pvParameters){
 		Upload_To_JTS();
 #endif
 		car_attitude.updated=0;
+	}
+}
+
+
+void Task_Key(void* pvParameters){
+	BaseType_t xReturn = pdPASS;
+	uint8_t key;
+	for(;;){
+		xReturn = xQueueReceive(queue_key,&key,portMAX_DELAY);
+		if(pdTRUE == xReturn){
+			if(key==0)KEY0_CallBack();
+			if(key==1)KEY1_CallBack();
+			if(key==2)KEY2_CallBack();
+		}
+		vTaskDelay(50);
 	}
 }
 
