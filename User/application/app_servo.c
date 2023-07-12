@@ -28,19 +28,23 @@ void Servo_Set_Degree(servo* servo,float degree){
 
 
 void Set_target_servo(float set_angle_in_space){
+    if(set_angle_in_space<0)set_angle_in_space+=360.0f;
+    if(set_angle_in_space>=360.0f)set_angle_in_space-=360.0f;
     angle_in_space=set_angle_in_space;
 }
 
 void Set_target_servo_flag(uint8_t flag){
+    float current_angle=angle_in_space;
     if(flag==0){
-        angle_in_space+=0;
+        current_angle+=0;
     }
     if(flag==1){
-        angle_in_space-=5;
+        current_angle-=5;
     }
     if(flag==2){
-        angle_in_space+=5;
+        current_angle+=5;
     }
+    Set_target_servo(current_angle);
 }
 
 void App_Update_Servo(void){
