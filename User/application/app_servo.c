@@ -11,7 +11,7 @@ float angle_in_servo;/*-180~180,舵机在舵机坐标系中的位置*/
 void init_app_servo(void){
     servo_1.dev=Soft_PWM_Add(SERVO_L_BASE,SERVO_L_PIN,SERVO_PWM_FULL_WIDTH_US);
     servo_2.dev=Soft_PWM_Add(SERVO_R_BASE,SERVO_R_PIN,SERVO_PWM_FULL_WIDTH_US);
-    Set_target_servo(0);
+    Set_target_servo(300);
 }
 
 /*!
@@ -33,16 +33,13 @@ void Set_target_servo(float set_angle_in_space){
     angle_in_space=set_angle_in_space;
 }
 
-void Set_target_servo_flag(uint8_t flag){
+void Set_target_servo_flag(uint8_t flag,short data){
     float current_angle=angle_in_space;
     if(flag==0){
-        current_angle+=0;
+        current_angle+=(float)data*PIXEL_TO_ANGLE;
     }
-    if(flag==1){
-        current_angle-=5;
-    }
-    if(flag==2){
-        current_angle+=5;
+    else{
+        current_angle+=0.5F;
     }
     Set_target_servo(current_angle);
 }

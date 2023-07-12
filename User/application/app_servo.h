@@ -29,7 +29,7 @@ extern servo servo_left;
 void init_app_servo(void);
 void Servo_Set_Degree(servo* servo,float degree);
 
-void Set_target_servo_flag(uint8_t flag);
+void Set_target_servo_flag(uint8_t flag,short data);
 void Set_target_servo(float set_angle_in_space);
 void App_Update_Servo(void);
 

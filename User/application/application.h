@@ -6,6 +6,8 @@
 #define SERVO_L_PIN            GPIO_PIN_2
 #define SERVO_R_PIN            GPIO_PIN_3
 
+/*像素转化为角度*/
+#define PIXEL_TO_ANGLE        -0.01F
 
 #include "app_servo.h"
 
