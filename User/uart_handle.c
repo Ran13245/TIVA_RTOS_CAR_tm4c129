@@ -46,7 +46,12 @@ void UartCallBack_JET(void){
 
 void UartCallBack_K210(void){
 #ifdef K210_UART	
-
+    float line=((short)uart_k210.receive[1])*10;
+    uint8_t flag=uart_k210.receive[3];
+    float angle=(short)(uart_k210.receive[2]);
+    if(flag)angle=-angle;
+    Set_Car_Attitude(line,angle);
+    printf_user(CONSOLE_UART,"set:%.2f,%.2f\r\n",line,angle);
 #endif
 }
 

@@ -183,11 +183,14 @@ void Task_VoltageUpdate(void* pvParameters){
 	}
 }
 
+bool first_start=1;
+uint8_t tmp[5]={0x2c,0x12,0x01,0x01,0x5b};
 /*!
  * @brief 数据上传到上位机
  * @param pvParameters 
  */
 void Task_DataUpload(void* pvParameters){
+	
 	TickType_t xLastWakeTime;
 	const TickType_t xFrequency = TASK_ITV_UPLOAD;
 	xLastWakeTime = xTaskGetTickCount();
@@ -196,6 +199,10 @@ void Task_DataUpload(void* pvParameters){
 #ifdef Jetson_UART
 		Upload_To_JTS();
 #endif
+		if(first_start){
+			Uart_DMA_Trans(K210_UART,tmp,5);
+			first_start=0;
+		}
 		car_attitude.updated=0;
 	}
 }

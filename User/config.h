@@ -27,7 +27,7 @@
 #define         FILTER_FREQ_IMU_GY     25.0F
 #define         FILTER_FREQ_IMU_GZ     25.0F
 /*是否使用积分级控制方式*/
-#define         USE_CAR_CONTROL         1
+#define         USE_CAR_CONTROL         0
 /*硬件定时器中断周期,us*/
 #define         TIM_ITV_US              100
 
@@ -40,7 +40,7 @@
     #define         USB_UART         UART4_BASE
     #define         BLE_UART         UART1_BASE
     // #define         Jetson_UART      UART0_BASE
-    // #define         K210_UART        UART3_BASE
+    #define         K210_UART        UART0_BASE
     // #define         OPENMV_UART      UART4_BASE
     /*波形显示串口*/
     #define         WAVE_UART        USB_UART
