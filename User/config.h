@@ -105,7 +105,7 @@
 
 /*EXTI*/
 #define         PRIORITY_PORTG      (1<<5)
-#define         PRIORITY_PORTE      (1<<5)
+#define         PRIORITY_PORTE      (4<<5)
 
 /*TIM*/
 #define         PRIORITY_TIM        (2<<5)

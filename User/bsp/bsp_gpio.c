@@ -77,6 +77,15 @@ void init_drv_GPIO(void){
     IntPrioritySet(INT_GPIOE, PRIORITY_PORTE);
 
     // /* GPIO interrupt configuration */
+    GPIOIntEnable(KEY0_GPIO_Port, KEY0_IntPin);
+    GPIOIntTypeSet(KEY0_GPIO_Port, KEY0_Pin, GPIO_FALLING_EDGE);
+
+    GPIOIntEnable(KEY1_GPIO_Port, KEY1_IntPin);
+    GPIOIntTypeSet(KEY1_GPIO_Port, KEY1_Pin, GPIO_FALLING_EDGE);
+
+    GPIOIntEnable(KEY2_GPIO_Port, KEY2_IntPin);
+    GPIOIntTypeSet(KEY2_GPIO_Port, KEY2_Pin, GPIO_FALLING_EDGE);
+
 //四倍频:
 #if USE_4_TIMES_ENCODER
     GPIOIntEnable(EncA_LeftFront_GPIO_Port, EncA_LeftFront_IntPin);
