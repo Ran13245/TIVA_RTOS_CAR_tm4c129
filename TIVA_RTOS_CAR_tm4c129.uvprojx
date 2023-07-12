@@ -439,6 +439,11 @@
               <FileType>1</FileType>
               <FilePath>.\User\application\application.c</FilePath>
             </File>
+            <File>
+              <FileName>app_servo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User\application\app_servo.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

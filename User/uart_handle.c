@@ -10,10 +10,16 @@
  */
 
 #include "bsp.h"
+#include "application.h"
 
 void UartCallBack_USB(void){
 #ifdef USB_UART
-    Uart_DMA_Trans(USB_UART,uart_usb.receive,uart_usb.len);
+    Uart_DMA_Trans(CONSOLE_UART,uart_usb.receive,uart_usb.len);
+    // float angle_lr,angle_ud;
+    // angle_lr=((short)(uart_usb.receive[1]<<8)|(uart_usb.receive[2]))*0.1F;
+    // angle_ud=((short)(uart_usb.receive[3]<<8)|(uart_usb.receive[4]))*0.1F;
+    // Servo_Set_Degree_All(angle_lr,angle_ud);
+    // printf_user(CONSOLE_UART,"%.2f,%.2f\r\n",angle_lr,angle_ud);
     // Uart_DMA_Trans(BLE_UART,&uart_usb.receive[1],uart_usb.len-2);//设置蓝牙用
 #endif
 }

@@ -6,6 +6,6 @@
  * @param  
  */
 void init_app(void){
-    
+    init_app_servo();
 }
 
