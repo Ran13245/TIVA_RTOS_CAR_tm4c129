@@ -14,6 +14,7 @@
 
 #include "main.h"
 #include "bsp.h"
+#include "application.h"
 #include "tm4c129_it.h"
 #include "testbench.h"
 
@@ -78,6 +79,8 @@ int main(void){
 
 	BSP_Init();
 	printf_user(CONSOLE_UART,"BSP Pass.\r\n");
+	init_app();
+	printf_user(CONSOLE_UART,"App Pass.\r\n");
 
 	xReturn = RTOS_Init();
 	
