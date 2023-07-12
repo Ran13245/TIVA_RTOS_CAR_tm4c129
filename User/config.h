@@ -13,6 +13,8 @@
  * @brief 杂项
  * ****************************************************************************************************************************
  */
+/*系统频率,仅作为计算参数,不能用来设置*/
+#define         USER_SYS_FREQ          120000000
 /*----testbench是否启用----*/
 #define         TEST_BENCH      0
 /*是否对IMU数据进行滤波*/
@@ -26,7 +28,8 @@
 #define         FILTER_FREQ_IMU_GZ     25.0F
 /*是否使用积分级控制方式*/
 #define         USE_CAR_CONTROL         1
-
+/*硬件定时器中断周期,us*/
+#define         TIM_ITV_US              100
 
 /**
  * @brief 串口
@@ -88,6 +91,8 @@
 #define         PRIORITY_PORTG      (0<<5)
 #define         PRIORITY_PORTE      (0<<5)
 
+/*TIM*/
+#define         PRIORITY_TIM        (0<<5)
 
 #else
 /*串口*/
@@ -101,6 +106,9 @@
 /*EXTI*/
 #define         PRIORITY_PORTG      (1<<5)
 #define         PRIORITY_PORTE      (1<<5)
+
+/*TIM*/
+#define         PRIORITY_TIM        (2<<5)
 #endif
 
 /**

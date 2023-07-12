@@ -247,9 +247,9 @@ void ICM20602_ReadData(uint8_t Address,uint8_t Data[],uint8_t Num){
     I2CMasterControl(ICM20602_I2C_BASE, 0x04);//stop条件,状态接收->空闲
     while(I2CMasterBusy(ICM20602_I2C_BASE));
 
-    if(I2CMasterErr(ICM20602_I2C_BASE) != I2C_MASTER_ERR_NONE){
-        ICM20602_err_handle();
-    }
+    // if(I2CMasterErr(ICM20602_I2C_BASE) != I2C_MASTER_ERR_NONE){
+    //     ICM20602_err_handle();
+    // }
 }
 
 
@@ -274,9 +274,9 @@ void ICM20602_WriteByte(uint8_t Address,uint8_t Data){
     I2CMasterControl(ICM20602_I2C_BASE, 0x05);//发送之后stop,状态发送->空闲
     while(I2CMasterBusy(ICM20602_I2C_BASE));
 
-    if(I2CMasterErr(ICM20602_I2C_BASE) != I2C_MASTER_ERR_NONE){
-        ICM20602_err_handle();
-    }
+    // if(I2CMasterErr(ICM20602_I2C_BASE) != I2C_MASTER_ERR_NONE){
+    //     ICM20602_err_handle();
+    // }
 }
 
 
@@ -307,9 +307,9 @@ uint8_t ICM20602_ReadByte(uint8_t Address){
     while(I2CMasterBusy(ICM20602_I2C_BASE));
 
     //错误处理
-    if(I2CMasterErr(ICM20602_I2C_BASE) != I2C_MASTER_ERR_NONE){
-        ICM20602_err_handle();
-    }
+    // if(I2CMasterErr(ICM20602_I2C_BASE) != I2C_MASTER_ERR_NONE){
+    //     ICM20602_err_handle();
+    // }
     return Data;
 }
 

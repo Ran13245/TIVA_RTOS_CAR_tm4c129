@@ -234,10 +234,12 @@ void test_car(void){
 
 
 void test_utils(void){
-    init_drv_ADC();
+    // init_drv_ADC();
+    init_drv_tim();
+    GPIOPinTypeGPIOOutput(GPIO_PORTP_BASE, GPIO_PIN_2);
     while(1){
-        Voltage_Update();
-        printf_user(CONSOLE_UART,"%.2f\r\n",main_voltage);
+        // Voltage_Update();
+        // printf_user(CONSOLE_UART,"%.2f\r\n",main_voltage);
         delay_ms(2000);
     }
     

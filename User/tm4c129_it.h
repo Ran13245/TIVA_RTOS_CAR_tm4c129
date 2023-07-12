@@ -23,6 +23,8 @@ void UART4_IRQHandler(void);
 void EXTI_PORTG_IRQHandler(void);
 void EXTI_PORTE_IRQHandler(void);
 
+void TIM1_IRQHandler(void);
+
 #ifdef __cplusplus
 }
 #endif

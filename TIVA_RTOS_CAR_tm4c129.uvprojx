@@ -424,6 +424,11 @@
               <FileType>1</FileType>
               <FilePath>.\User\car_attitude.c</FilePath>
             </File>
+            <File>
+              <FileName>tim_handle.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User\tim_handle.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -486,6 +491,11 @@
               <FileName>motor.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\User\bsp\motor.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User\bsp\bsp_tim.c</FilePath>
             </File>
           </Files>
         </Group>

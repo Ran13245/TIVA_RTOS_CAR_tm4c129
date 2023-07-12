@@ -321,5 +321,7 @@ void EXTI_PORTG_IRQHandler(void){
 
 #endif
 
-
+void TIM1_IRQHandler(void){
+	Tim_CallBack();
+}
 

@@ -70,6 +70,7 @@ static void BSP_Init(void){
 	init_Car_Contorl();
 	// BLE_AT_Set();
 	delay_ms(200);
+	init_drv_tim();
 }
 
 int main(void){

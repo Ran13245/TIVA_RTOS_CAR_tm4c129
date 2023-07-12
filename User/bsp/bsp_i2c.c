@@ -19,6 +19,7 @@
 #include "driverlib/gpio.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include "config.h"
 
 extern void delay_ms(uint32_t n);
 /*!
