@@ -5,7 +5,7 @@
 
 #include "software_pwm.h"
 //舵机角度绝对值范围的一半,degree
-#define SERVO_HALF_RANGE 135
+#define SERVO_HALF_RANGE 90
 
 //20ms
 #define SERVO_PWM_FULL_WIDTH_US 20000

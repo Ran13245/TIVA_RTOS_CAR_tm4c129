@@ -17,9 +17,14 @@ void Servo_Set_Degree(servo* servo,float degree){
     Set_Duty_Soft(servo->dev,duty);
 }
 
+/*!
+ * @brief 控制舵机转动
+ * @param LRdegree 角速度,单位测不明白,套个反馈得了
+ * @param UDdegree 保留位
+ @*/
 void Servo_Set_Degree_All(float LRdegree, float UDdegree){
     Servo_Set_Degree(&servo_LeftRight,LRdegree);
-    Servo_Set_Degree(&servo_UpDown,UDdegree);
+    // Servo_Set_Degree(&servo_UpDown,UDdegree);
 }
 
 
