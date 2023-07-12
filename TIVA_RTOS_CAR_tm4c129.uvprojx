@@ -497,6 +497,11 @@
               <FileType>1</FileType>
               <FilePath>.\User\bsp\bsp_tim.c</FilePath>
             </File>
+            <File>
+              <FileName>software_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User\bsp\software_pwm.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

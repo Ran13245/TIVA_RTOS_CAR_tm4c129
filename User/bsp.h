@@ -51,6 +51,7 @@
 #include "car_attitude.h"
 #include "car_control.h"
 #include "user_filter.h"
+#include "software_pwm.h"
 
 #include "config.h"
 #include "const.h"
