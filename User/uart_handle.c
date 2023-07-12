@@ -27,19 +27,24 @@ void UartCallBack_USB(void){
 
 void UartCallBack_BLE(void){
 #ifdef BLE_UART
-    Uart_DMA_Trans(CONSOLE_UART,uart_ble.receive,uart_ble.len);
+    float rcv=uart_ble.receive[1];
+    
+    // Uart_DMA_Trans(CONSOLE_UART,uart_ble.receive,uart_ble.len);
+    printf_user(CONSOLE_UART,"%.2f\r\n",rcv);
 #endif
 }
 
 
 void UartCallBack_JET(void){
 #ifdef Jetson_UART
-    jts_to_mcu.target_v_z_H=uart_jetson.receive[5];
-    jts_to_mcu.target_v_z_L=uart_jetson.receive[6];
-    jts_to_mcu.target_v_x_H=uart_jetson.receive[3];
-    jts_to_mcu.target_v_x_L=uart_jetson.receive[4];
+    // jts_to_mcu.target_v_z_H=uart_jetson.receive[5];
+    // jts_to_mcu.target_v_z_L=uart_jetson.receive[6];
+    // jts_to_mcu.target_v_x_H=uart_jetson.receive[3];
+    // jts_to_mcu.target_v_x_L=uart_jetson.receive[4];
     Uart_DMA_Trans(CONSOLE_UART,uart_jetson.receive,uart_jetson.len);
-    Download_From_JTS();
+    // Download_From_JTS();
+    Set_target_servo_flag(uart_jetson.receive[1]);
+
 #endif
 }
 

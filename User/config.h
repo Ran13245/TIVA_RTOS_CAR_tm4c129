@@ -29,7 +29,7 @@
 /*是否使用积分级控制方式*/
 #define         USE_CAR_CONTROL         0
 /*硬件定时器中断周期,us*/
-#define         TIM_ITV_US              100
+#define         TIM_ITV_US              20
 
 /**
  * @brief 串口
@@ -37,13 +37,13 @@
  */
 /*设备串口,不用时注释掉*/
 #if (!TEST_BENCH)
-    #define         USB_UART         UART4_BASE
+    // #define         USB_UART         UART4_BASE
     #define         BLE_UART         UART1_BASE
-    // #define         Jetson_UART      UART0_BASE
+    #define         Jetson_UART      UART4_BASE
     #define         K210_UART        UART0_BASE
     // #define         OPENMV_UART      UART4_BASE
     /*波形显示串口*/
-    #define         WAVE_UART        USB_UART
+    // #define         WAVE_UART        USB_UART
 #else 
     #define         USB_UART         UART4_BASE
     #define         BLE_UART         UART1_BASE
@@ -108,7 +108,7 @@
 #define         PRIORITY_PORTE      (4<<5)
 
 /*TIM*/
-#define         PRIORITY_TIM        (2<<5)
+#define         PRIORITY_TIM        (1<<5)
 #endif
 
 /**
