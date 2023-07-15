@@ -27,7 +27,7 @@
 #define         FILTER_FREQ_IMU_GY     25.0F
 #define         FILTER_FREQ_IMU_GZ     25.0F
 /*是否使用积分级控制方式*/
-#define         USE_CAR_CONTROL         0
+#define         USE_CAR_CONTROL         1
 /*硬件定时器中断周期,us*/
 #define         TIM_ITV_US              20
 
