@@ -51,9 +51,11 @@ void Set_Car_Control(float x, float y, float angle){
     else if(x==0 && angle!=0){
         car_control.mode=SPIN;
         car_control.target_spin_angle=angle;
+        car_control.spin_parameter.interrupt_tolerance=fabsf((angle+BIAS_ANGLE)*SPIN_INT_RATE);
         car_control.spin_parameter.start_yaw=car_attitude.yaw;
         car_control.spin_parameter.r=fabsf(y);
         car_control.spin_parameter.circles=0;
+        car_control.spin_parameter.if_enable_interrupt=0;
         PID_Clear(&car_control.pid_spin);
         PID_Clear(&car_attitude.pid_v_angle);
     }
@@ -89,6 +91,9 @@ void Car_Control_Update_Input(void){
             get_current_spin_angle();
             if(fabsf(car_control.current_spin_angle - car_control.target_spin_angle) < BIAS_ANGLE) {
                 Set_Car_Control(0,0,0);
+            }
+            if(fabsf(car_control.current_spin_angle - car_control.target_spin_angle) > car_control.spin_parameter.interrupt_tolerance){
+                car_control.spin_parameter.if_enable_interrupt=1;
             }
             break;
         }
