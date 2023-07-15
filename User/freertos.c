@@ -215,7 +215,6 @@ void Task_DataUpload(void* pvParameters){
 #ifdef Jetson_UART
 		// Upload_To_JTS();
 #endif
-		printf_user(CONSOLE_UART,"%.2f\n",car_attitude.current_v_angle);
 		car_attitude.updated=0;
 	}
 }

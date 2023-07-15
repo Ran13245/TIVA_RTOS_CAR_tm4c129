@@ -15,6 +15,7 @@ void init_Car_Contorl(void){
     Set_PID_Limit(&car_control.pid_spin,LIMIT_INC_SPIN,LIMIT_POS_SPIN,LIMIT_ITGR_SPIN);
     Set_PID(&car_control.pid_line_pos,P_POS,I_POS,D_POS);
     Set_PID(&car_control.pid_spin,P_SPIN,I_SPIN,D_SPIN);
+    car_control.spin_parameter.if_enable_interrupt=1;
 }
 
 /*!
