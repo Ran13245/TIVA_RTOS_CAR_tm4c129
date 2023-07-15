@@ -32,8 +32,7 @@ void Car_Attitude_Update_Input(void){
     float left,right;
     left=Wheel_Get_V_Real(LEFT);
     right=Wheel_Get_V_Real(RIGHT);
-        car_attitude.current_v_line=0.5F*(left+right);
-        // car_attitude.current_v_z=0.5F*(right-left); 
+    car_attitude.current_v_line=0.5F*(left+right);
     #if V_DEGREE_FROM_IMU
         car_attitude.current_v_angle=imu_data.g_z;//从IMU处获得角速度
     #else
@@ -49,7 +48,7 @@ void Car_Attitude_Update_Input(void){
 void Car_Attitude_Update_Output(void){
     float v_left=0;
     float v_right=0;
-    static float v_z=0;
+    float v_z=0;
     if(car_attitude.flag_stop){
         v_left=0;
         v_right=0;
@@ -57,8 +56,7 @@ void Car_Attitude_Update_Output(void){
     }
     else {
 #if     V_ANGLE_PID
-        v_z+=PID_Cal_Inc(&car_attitude.pid_v_angle,car_attitude.current_v_angle,car_attitude.target_v_angle);
-        printf_user(CONSOLE_UART, "v_angle_set:%.2f\r\n",v_z*FRAME_W_HALF_REC*RAD_TO_DEGREE);
+        v_z=PID_Cal_Pos(&car_attitude.pid_v_angle,car_attitude.current_v_angle,car_attitude.target_v_angle);
 #else
         v_z=car_attitude.target_v_angle*FRAME_W_HALF*DEGREE_TO_RAD;
 #endif
@@ -84,7 +82,9 @@ void Set_Car_Attitude(float v_line_target,float v_angle_target){
     car_attitude.target_v_angle=v_angle_target;
     if(car_attitude.target_v_line==0 && car_attitude.target_v_angle==0)Set_Car_Stop();
     else Set_Car_Start();
-    // PID_Clear(&car_attitude.pid_v_angle);
+#if (!USE_CAR_CONTROL)
+    PID_Clear(&car_attitude.pid_v_angle);
+#endif
 }
 
 

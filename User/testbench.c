@@ -21,8 +21,8 @@ void Enter_Testbench(void){
     // test_wave();
     // test_pwm_output();
     // test_motor_input();
-    // test_motor_pid();
-    test_imu();
+    test_motor_pid();
+    // test_imu();
     // test_communicate();
     // test_car();
     // test_utils();
@@ -103,11 +103,7 @@ void test_motor_input(void){
     while (1)
     {
         Motor_Update_Input_All();
-        printf_user(CONSOLE_UART,"LF:%.2f  ",motor_LeftFront.v_real);
-        printf_user(CONSOLE_UART,"LR:%.2f  ",motor_LeftRear.v_real);
-        printf_user(CONSOLE_UART,"RF:%.2f  ",motor_RightFront.v_real);
-        printf_user(CONSOLE_UART,"RR:%.2f  ",motor_RightRear.v_real);
-        printf_user(CONSOLE_UART,"\r\n");
+        printf_user(WAVE_UART,"%.2f,%.2f,%.2f,%.2f\n",motor_LeftFront.v_real*0.1F,motor_LeftRear.v_real*0.1F,motor_RightFront.v_real*0.1F,motor_RightRear.v_real*0.1F);
         delay_ms(200);
     }
     
@@ -122,26 +118,13 @@ void test_motor_pid(void){
     init_drv_PWM();
     init_motor();
     Set_Car_Start();
-    // Motor_Set_V_Enc_All(1000,1000,1000,1000);
-    GPIOPinWrite(motor_RightRear.DirBase1,motor_RightRear.DirPin1,~(motor_RightRear.DirPin1));
-    GPIOPinWrite(motor_RightRear.DirBase2,motor_RightRear.DirPin2,(motor_RightRear.DirPin2));
-    GPIOPinWrite(motor_LeftFront.DirBase1,motor_LeftFront.DirPin1,~(motor_LeftFront.DirPin1));
-    GPIOPinWrite(motor_LeftFront.DirBase2,motor_LeftFront.DirPin2,(motor_LeftFront.DirPin2));
-    GPIOPinWrite(motor_RightFront.DirBase1,motor_RightFront.DirPin1,~(motor_RightFront.DirPin1));
-    GPIOPinWrite(motor_RightFront.DirBase2,motor_RightFront.DirPin2,(motor_RightFront.DirPin2));
-    GPIOPinWrite(motor_LeftRear.DirBase1,motor_LeftRear.DirPin1,~(motor_LeftRear.DirPin1));
-    GPIOPinWrite(motor_LeftRear.DirBase2,motor_LeftRear.DirPin2,(motor_LeftRear.DirPin2));
-    Set_Duty(motor_LeftRear.PWMBase,motor_LeftRear.PWMOut,0.2);
-    Set_Duty(motor_RightFront.PWMBase,motor_RightFront.PWMOut,0.2);
-    Set_Duty(motor_RightRear.PWMBase,motor_RightRear.PWMOut,0.2);
-    Set_Duty(motor_LeftFront.PWMBase,motor_LeftFront.PWMOut,0.2);
+    // Motor_Set_V_Enc_All(1500,1500,1500,1500);
+    Motor_Set_V_Real_All(300,300,300,300);
     while (1)
     {   
-        // Motor_Update_Input(&motor_RightRear);
-        // Motor_Update_Output(&motor_RightRear);
-        // Motor_Update_Input_All();
-        // Motor_Update_Output_All();
-        
+        Motor_Update_Input_All();
+        Motor_Update_Output_All();
+        printf_user(WAVE_UART,"%.2f,%.2f,%.2f,%.2f\n",motor_LeftFront.v_real*0.1F,motor_LeftRear.v_real*0.1F,motor_RightFront.v_real*0.1F,motor_RightRear.v_real*0.1F);
         
         delay_ms(TASK_ITV_CAR);
     }

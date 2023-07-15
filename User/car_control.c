@@ -36,6 +36,7 @@ void Set_Car_Control(float x, float y, float angle){
         car_control.target_line_distance=x;
         Wheel_Clear_Distance();
         PID_Clear(&car_control.pid_line_pos);
+        PID_Clear(&car_attitude.pid_v_angle);
     }
     else if(y!=0 && x!=0 && angle==0){
         car_control.mode=TO_POINT;
@@ -45,6 +46,7 @@ void Set_Car_Control(float x, float y, float angle){
         car_control.target_line_distance=car_control.to_point_parameter.R * asin(x/car_control.to_point_parameter.R);
         Wheel_Clear_Distance();
         PID_Clear(&car_control.pid_line_pos);
+        PID_Clear(&car_attitude.pid_v_angle);
     }
     else if(x==0 && angle!=0){
         car_control.mode=SPIN;
@@ -53,6 +55,7 @@ void Set_Car_Control(float x, float y, float angle){
         car_control.spin_parameter.r=fabsf(y);
         car_control.spin_parameter.circles=0;
         PID_Clear(&car_control.pid_spin);
+        PID_Clear(&car_attitude.pid_v_angle);
     }
     else{
         car_control.mode=STOP;

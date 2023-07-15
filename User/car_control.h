@@ -6,7 +6,7 @@
 #include "pid.h"
 
 #define BIAS_LINE   10.0F
-#define BIAS_ANGLE  2.0F
+#define BIAS_ANGLE  3.0F
 
 
 typedef enum __car_mode{

@@ -80,7 +80,7 @@ void AppTaskCreate(void* pvParameters){
 	if(pdPASS == xReturn)
 		printf_user(CONSOLE_UART,"DataUpload\r\n");
 
-	xReturn = xTaskCreate(Task_Key,"LEDBlink",128,NULL,6,&TaskHandle_Key);
+	xReturn = xTaskCreate(Task_Key,"Key",128,NULL,6,&TaskHandle_Key);
 	if(pdPASS == xReturn);
 		printf_user(CONSOLE_UART,"Key\r\n");
 
@@ -196,7 +196,7 @@ void Task_CarAttitude(void* pvParameters){
 void Task_VoltageUpdate(void* pvParameters){
 	for(;;){
 		Voltage_Update();
-		vTaskDelay(1000);
+		vTaskDelay(3000);
 	}
 }
 
@@ -213,8 +213,7 @@ void Task_DataUpload(void* pvParameters){
 #ifdef Jetson_UART
 		Upload_To_JTS();
 #endif
-		printf_user(CONSOLE_UART,"acctural:%.2f\r\n",car_attitude.current_v_angle);
-		// printf_user(WAVE_UART,"%.2f,%.2f,%.2f,%.2f\n",motor_LeftFront.v_real,motor_LeftRear.v_real,motor_RightFront.v_real,motor_RightRear.v_real);
+		printf_user(CONSOLE_UART,"%.2f\n",car_attitude.current_v_angle);
 		car_attitude.updated=0;
 	}
 }
