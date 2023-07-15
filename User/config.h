@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2023
  * 
  */
-
+#include "const.h"
 /**
  * @brief 杂项
  * ****************************************************************************************************************************
@@ -45,7 +45,7 @@
     /*波形显示串口*/
     // #define         WAVE_UART        USB_UART
 #else 
-    #define         USB_UART         UART4_BASE
+    #define         USB_UART         UART0_BASE
     #define         BLE_UART         UART1_BASE
     // #define         Jetson_UART      UART0_BASE
     // #define         K210_UART        UART3_BASE
@@ -115,9 +115,9 @@
  * @brief FreeRTOS各任务执行间隔时间,ms
  * 
  */
-#define         TASK_ITV_CAR        50
+#define         TASK_ITV_CAR        5
 #define         TASK_ITV_IMU        5
-#define         TASK_ITV_UPLOAD     10
+#define         TASK_ITV_UPLOAD     20
 
 /**
  * @brief 小车参数
@@ -133,7 +133,7 @@
 #define         V_DEGREE_FROM_IMU       1
 
 //是否使用角速度PID
-#define         V_ANGLE_PID             1
+#define         V_ANGLE_PID             0
 
 //每圈编码器数
 #define         ENC_EVERY_CIRCLE        1560
@@ -152,8 +152,8 @@
 #define         RF_DIR                  1
 #define         RR_DIR                  1
 
-//左右轮距的一半        !!单位mm!!
-#define         FRAME_W_HALF            80.0F
+//左右轮距的一半(用IMU测算)        !!单位mm!!
+#define         FRAME_W_HALF            115.0F
 
 //前后轮轴距的一半
 #define         FRAME_L_HALF            100.0F
@@ -164,29 +164,33 @@
  */
 //电机目标编码器速度最大值,编码器单位/s
 #define         MAX_V_ENC               (3*ENC_EVERY_CIRCLE)
+//电机最大实际速度,mm/s
+#define         MAX_V_REAL              MAX_V_ENC/V_REAL_TO_ENC
 //电机输出最大PWM占空比
-#define         MAX_MOTOR_DUTY          0.5F
+#define         MAX_MOTOR_DUTY          0.85F
+//最大角速度,degree/s
+#define         MAX_V_ANGLE             120.0F       
 
 //尺度变换,占空比的100%对应PID的1000,提高计算精度
 #define         ZOOM_PID_TO_DUTY        0.001F
 
 //增量式PID增量限幅
-#define         LIMIT_INC_LF            500.0F
-#define         LIMIT_INC_LR            500.0F
-#define         LIMIT_INC_RF            500.0F
-#define         LIMIT_INC_RR            500.0F
-#define         LIMIT_INC_POS           300.0F
-#define         LIMIT_INC_SPIN          90.0F
-#define         LIMIT_INC_V_ANGLE       200.0F
+#define         LIMIT_INC_LF            0.5F*MAX_MOTOR_DUTY/ZOOM_PID_TO_DUTY     /*单位:占空比1/1000*/
+#define         LIMIT_INC_LR            0.5F*MAX_MOTOR_DUTY/ZOOM_PID_TO_DUTY     
+#define         LIMIT_INC_RF            0.5F*MAX_MOTOR_DUTY/ZOOM_PID_TO_DUTY
+#define         LIMIT_INC_RR            0.5F*MAX_MOTOR_DUTY/ZOOM_PID_TO_DUTY
+#define         LIMIT_INC_POS           MAX_V_REAL*0.5F                              /*单位:mm/s,直线速度*/
+#define         LIMIT_INC_SPIN          MAX_V_ANGLE                               /*单位:degree/s,角速度*/
+#define         LIMIT_INC_V_ANGLE       0.5F*MAX_V_ANGLE*FRAME_W_HALF*DEGREE_TO_RAD                              /*单位:mm/s,角速度补偿速度*/
 
 //位置式PID限幅,PWM占空比100%对应PID的1000
 #define         LIMIT_POS_LF            (MAX_MOTOR_DUTY*1000)
 #define         LIMIT_POS_LR            (MAX_MOTOR_DUTY*1000)
 #define         LIMIT_POS_RF            (MAX_MOTOR_DUTY*1000)
 #define         LIMIT_POS_RR            (MAX_MOTOR_DUTY*1000)
-#define         LIMIT_POS_POS           1.0F
-#define         LIMIT_POS_SPIN          1.0F
-#define         LIMIT_POS_V_ANGLE       1.0F
+#define         LIMIT_POS_POS           MAX_V_REAL*0.5F 
+#define         LIMIT_POS_SPIN          MAX_V_ANGLE
+#define         LIMIT_POS_V_ANGLE       MAX_V_ANGLE*FRAME_W_HALF*DEGREE_TO_RAD
 
 //位置式PID积分限幅
 #define         LIMIT_ITGR_LF           (MAX_MOTOR_DUTY*1000)
@@ -195,7 +199,7 @@
 #define         LIMIT_ITGR_RR           (MAX_MOTOR_DUTY*1000)
 #define         LIMIT_ITGR_POS          1.0F
 #define         LIMIT_ITGR_SPIN         1.0F
-#define         LIMIT_ITGR_V_ANGLE      1.0F
+#define         LIMIT_ITGR_V_ANGLE      LIMIT_POS_V_ANGLE*100000
 
 /**
  * @brief PID参数
@@ -207,7 +211,7 @@
 #define         P_RR            0.05F
 #define         P_POS           1.0F    //位置
 #define         P_SPIN          2.0F    //原地旋转
-#define         P_V_ANGLE       0.5F    //角速度
+#define         P_V_ANGLE       11.5F    //角速度
 
 #define         I_LF            0.01F
 #define         I_LR            0.01F
@@ -215,7 +219,7 @@
 #define         I_RR            0.01F
 #define         I_POS           0.0F
 #define         I_SPIN          0.0F
-#define         I_V_ANGLE       0.0F
+#define         I_V_ANGLE       0.15F
 
 #define         D_LF            0.0F
 #define         D_LR            0.0F
@@ -223,7 +227,7 @@
 #define         D_RR            0.0F
 #define         D_POS           0.0F
 #define         D_SPIN          0.0F
-#define         D_V_ANGLE       0.0F
+#define         D_V_ANGLE       6.0F
 
 
 

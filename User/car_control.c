@@ -35,6 +35,8 @@ void Set_Car_Control(float x, float y, float angle){
         car_control.mode=GO_LINE;
         car_control.target_line_distance=x;
         Wheel_Clear_Distance();
+        PID_Clear(&car_control.pid_line_pos);
+        PID_Clear(&car_attitude.pid_v_angle);
     }
     else if(y!=0 && x!=0 && angle==0){
         car_control.mode=TO_POINT;
@@ -43,13 +45,19 @@ void Set_Car_Control(float x, float y, float angle){
         car_control.to_point_parameter.R=(x*x+y*y)/(2*y);
         car_control.target_line_distance=car_control.to_point_parameter.R * asin(x/car_control.to_point_parameter.R);
         Wheel_Clear_Distance();
+        PID_Clear(&car_control.pid_line_pos);
+        PID_Clear(&car_attitude.pid_v_angle);
     }
     else if(x==0 && angle!=0){
         car_control.mode=SPIN;
         car_control.target_spin_angle=angle;
+        car_control.spin_parameter.interrupt_tolerance=fabsf((angle+BIAS_ANGLE)*SPIN_INT_RATE);
         car_control.spin_parameter.start_yaw=car_attitude.yaw;
         car_control.spin_parameter.r=fabsf(y);
         car_control.spin_parameter.circles=0;
+        car_control.spin_parameter.if_enable_interrupt=0;
+        PID_Clear(&car_control.pid_spin);
+        PID_Clear(&car_attitude.pid_v_angle);
     }
     else{
         car_control.mode=STOP;
@@ -65,7 +73,7 @@ void Car_Control_Update_Input(void){
     {
         case GO_LINE:{
             get_current_distance();
-            if(fabsf(car_control.current_line_distance - car_control.target_line_distance) < 2.0F) {
+            if(fabsf(car_control.current_line_distance - car_control.target_line_distance) <  BIAS_LINE) {
                 Set_Car_Control(0,0,0);
             }
             break;
@@ -73,7 +81,7 @@ void Car_Control_Update_Input(void){
             
         case TO_POINT:{
             get_current_distance();
-            if(fabsf(car_control.current_line_distance - car_control.target_line_distance) < 2.0F) {
+            if(fabsf(car_control.current_line_distance - car_control.target_line_distance) < BIAS_LINE) {
                 Set_Car_Control(0,0,0);
             }
             break;
@@ -81,8 +89,11 @@ void Car_Control_Update_Input(void){
             
         case SPIN:{
             get_current_spin_angle();
-            if(fabsf(car_control.current_spin_angle - car_control.target_spin_angle) < 0.5F) {
+            if(fabsf(car_control.current_spin_angle - car_control.target_spin_angle) < BIAS_ANGLE) {
                 Set_Car_Control(0,0,0);
+            }
+            if(fabsf(car_control.current_spin_angle - car_control.target_spin_angle) > car_control.spin_parameter.interrupt_tolerance){
+                car_control.spin_parameter.if_enable_interrupt=1;
             }
             break;
         }
@@ -103,22 +114,22 @@ void Car_Control_Update_Output(void){
     switch (car_control.mode)
     {
         case GO_LINE:{
-            target_v_line+=PID_Cal_Inc(&car_control.pid_line_pos,car_control.current_line_distance,car_control.target_line_distance);
+            target_v_line=PID_Cal_Pos(&car_control.pid_line_pos,car_control.current_line_distance,car_control.target_line_distance + BIAS_LINE);
             Set_Car_Attitude(target_v_line,0);
             break;
         }
             
         case TO_POINT:{
-            target_v_line+=PID_Cal_Inc(&car_control.pid_line_pos,car_control.current_line_distance,car_control.target_line_distance);
+            target_v_line=PID_Cal_Pos(&car_control.pid_line_pos,car_control.current_line_distance,car_control.target_line_distance + BIAS_LINE);
             target_v_angle=car_control.to_point_parameter.dir * target_v_line / car_control.to_point_parameter.R * RAD_TO_DEGREE;
             Set_Car_Attitude(target_v_line,target_v_angle);
             break;
         }
             
         case SPIN:{
-            target_v_angle+=PID_Cal_Inc(&car_control.pid_spin,car_control.current_spin_angle,car_control.target_spin_angle);
+            target_v_angle=PID_Cal_Pos(&car_control.pid_spin,car_control.current_spin_angle,car_control.target_spin_angle + BIAS_ANGLE);
             target_v_line=fabsf(target_v_angle)*DEGREE_TO_RAD*car_control.spin_parameter.r;
-            Set_Car_Attitude(target_v_angle,target_v_angle);
+            Set_Car_Attitude(target_v_line,target_v_angle);
             break;
         }
             

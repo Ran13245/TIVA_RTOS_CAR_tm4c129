@@ -27,10 +27,7 @@ void UartCallBack_USB(void){
 
 void UartCallBack_BLE(void){
 #ifdef BLE_UART
-    float rcv=uart_ble.receive[1];
-    
-    // Uart_DMA_Trans(CONSOLE_UART,uart_ble.receive,uart_ble.len);
-    printf_user(CONSOLE_UART,"%.2f\r\n",rcv);
+    Uart_DMA_Trans(CONSOLE_UART,uart_ble.receive,uart_ble.len);
 #endif
 }
 

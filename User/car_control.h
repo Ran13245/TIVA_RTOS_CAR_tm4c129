@@ -5,6 +5,10 @@
 #include <stdbool.h>
 #include "pid.h"
 
+#define BIAS_LINE   10.0F
+#define BIAS_ANGLE  3.0F
+#define SPIN_INT_RATE   0.7F /*spin超过目标值的多少倍后允许被打断*/
+
 typedef enum __car_mode{
     DISABLE=0,/*禁用,直接控制car_attitude姿态*/
     STOP,/*静止*/
@@ -24,6 +28,8 @@ typedef struct __spin_parameter
     float r;//旋转半径
     int16_t circles;//YAW数据溢出次数,正为360->0(逆时针)
     float start_yaw;//旋转开始时的偏航角
+    float interrupt_tolerance;//转过该角度之后允许被打断
+    bool if_enable_interrupt;//是否已经转过可以被打断的角度
 }_spin_parameter;
 
 

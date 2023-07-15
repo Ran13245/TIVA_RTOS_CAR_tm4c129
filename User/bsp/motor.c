@@ -150,13 +150,13 @@ void Motor_Set_V_Enc(motor* motor,float v_enc){
  * @param motor 电机obj
  */
 void Motor_Update_Output(motor* motor){
-    if(car_attitude.flag_stop){
-        motor->duty=0;
-        GPIOPinWrite(motor->DirBase1,motor->DirPin1,~(motor->DirPin1));
-        GPIOPinWrite(motor->DirBase2,motor->DirPin2,~(motor->DirPin2));
-    }
-    else{
-        motor->duty+=ZOOM_PID_TO_DUTY*PID_Cal_Inc(&(motor->v_pid),motor->v_enc,motor->target_v_enc);
+    // if(car_attitude.flag_stop){
+    //     motor->duty=0;
+    //     GPIOPinWrite(motor->DirBase1,motor->DirPin1,~(motor->DirPin1));
+    //     GPIOPinWrite(motor->DirBase2,motor->DirPin2,~(motor->DirPin2));
+    // }
+    // else{
+        motor->duty=ZOOM_PID_TO_DUTY*PID_Cal_Pos(&(motor->v_pid),motor->v_enc,motor->target_v_enc);
         motor->duty=duty_limit(motor->duty);
         if(motor->dir){
             if(motor->duty > 0){
@@ -180,7 +180,7 @@ void Motor_Update_Output(motor* motor){
                 
             }
         }
-    }
+    // }
     Set_Duty(motor->PWMBase,motor->PWMOut,abs(motor->duty));
 }
 
