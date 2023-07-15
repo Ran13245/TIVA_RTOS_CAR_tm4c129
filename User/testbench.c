@@ -122,21 +122,26 @@ void test_motor_pid(void){
     init_drv_PWM();
     init_motor();
     Set_Car_Start();
-    Motor_Set_V_Enc_All(1000,0,0,0);
-    // GPIOPinWrite(motor_RightRear.DirBase1,motor_RightRear.DirPin1,~(motor_RightRear.DirPin1));
-    // GPIOPinWrite(motor_RightRear.DirBase2,motor_RightRear.DirPin2,(motor_RightRear.DirPin2));
-    // Set_Duty(motor_RightRear.PWMBase,motor_RightRear.PWMOut,0.2);
+    // Motor_Set_V_Enc_All(1000,1000,1000,1000);
+    GPIOPinWrite(motor_RightRear.DirBase1,motor_RightRear.DirPin1,~(motor_RightRear.DirPin1));
+    GPIOPinWrite(motor_RightRear.DirBase2,motor_RightRear.DirPin2,(motor_RightRear.DirPin2));
+    GPIOPinWrite(motor_LeftFront.DirBase1,motor_LeftFront.DirPin1,~(motor_LeftFront.DirPin1));
+    GPIOPinWrite(motor_LeftFront.DirBase2,motor_LeftFront.DirPin2,(motor_LeftFront.DirPin2));
+    GPIOPinWrite(motor_RightFront.DirBase1,motor_RightFront.DirPin1,~(motor_RightFront.DirPin1));
+    GPIOPinWrite(motor_RightFront.DirBase2,motor_RightFront.DirPin2,(motor_RightFront.DirPin2));
+    GPIOPinWrite(motor_LeftRear.DirBase1,motor_LeftRear.DirPin1,~(motor_LeftRear.DirPin1));
+    GPIOPinWrite(motor_LeftRear.DirBase2,motor_LeftRear.DirPin2,(motor_LeftRear.DirPin2));
+    Set_Duty(motor_LeftRear.PWMBase,motor_LeftRear.PWMOut,0.2);
+    Set_Duty(motor_RightFront.PWMBase,motor_RightFront.PWMOut,0.2);
+    Set_Duty(motor_RightRear.PWMBase,motor_RightRear.PWMOut,0.2);
+    Set_Duty(motor_LeftFront.PWMBase,motor_LeftFront.PWMOut,0.2);
     while (1)
     {   
         // Motor_Update_Input(&motor_RightRear);
         // Motor_Update_Output(&motor_RightRear);
-        Motor_Update_Input_All();
-        Motor_Update_Output_All();
-        DataScope_Load(motor_LeftFront.v_enc*0.1F);
-		DataScope_Load(motor_LeftRear.v_enc*0.1F);
-		DataScope_Load(motor_RightFront.v_enc*0.1F);
-		DataScope_Load(motor_RightRear.v_enc*0.1F);
-		DataScope();
+        // Motor_Update_Input_All();
+        // Motor_Update_Output_All();
+        
         
         delay_ms(TASK_ITV_CAR);
     }
@@ -166,9 +171,9 @@ void test_imu(void){
         // add.a_x+=imu_data.a_x/TASK_ITV_IMU;
         // add.a_y+=imu_data.a_y/TASK_ITV_IMU;
         // add.a_z+=(imu_data.a_z-IMU_ONE_G)/TASK_ITV_IMU;
-        add.g_x+=imu_data.g_x*0.001F*TASK_ITV_IMU;
-        add.g_y+=imu_data.g_y*0.001F*TASK_ITV_IMU;
-        add.g_z+=imu_data.g_z*0.001F*TASK_ITV_IMU;
+        // add.g_x+=imu_data.g_x*0.001F*TASK_ITV_IMU;
+        // add.g_y+=imu_data.g_y*0.001F*TASK_ITV_IMU;
+        // add.g_z+=imu_data.g_z*0.001F*TASK_ITV_IMU;
 
         // DataScope_Load(add.a_x);
         // DataScope_Load(add.a_y);
@@ -183,9 +188,10 @@ void test_imu(void){
         // DataScope_Load(imu_data.g_y*100);
         // DataScope_Load(imu_data.g_z*100);
         // DataScope();
-printf_user(WAVE_UART,"%.2f,%.2f,%.2f\n",add.g_x,add.g_y,add.g_z);
+// printf_user(CONSOLE_UART,"%.2f\n",imu_data.g_z);
         // printf_user(WAVE_UART,"%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n",imu_data.a_x,imu_data.a_y,imu_data.a_z,imu_data.g_x,imu_data.g_y,imu_data.g_z);
-        
+        if(imu_data.a_x >0.0f)Set_LED(0,1,0);
+        else Set_LED(1,0,0);
         // printf_user(WAVE_UART,"\r\n");
         delay_ms(TASK_ITV_IMU);
     }    

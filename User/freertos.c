@@ -213,6 +213,8 @@ void Task_DataUpload(void* pvParameters){
 #ifdef Jetson_UART
 		Upload_To_JTS();
 #endif
+		printf_user(CONSOLE_UART,"acctural:%.2f\r\n",car_attitude.current_v_angle);
+		// printf_user(WAVE_UART,"%.2f,%.2f,%.2f,%.2f\n",motor_LeftFront.v_real,motor_LeftRear.v_real,motor_RightFront.v_real,motor_RightRear.v_real);
 		car_attitude.updated=0;
 	}
 }

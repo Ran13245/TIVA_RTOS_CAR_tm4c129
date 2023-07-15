@@ -5,6 +5,10 @@
 #include <stdbool.h>
 #include "pid.h"
 
+#define BIAS_LINE   10.0F
+#define BIAS_ANGLE  2.0F
+
+
 typedef enum __car_mode{
     DISABLE=0,/*禁用,直接控制car_attitude姿态*/
     STOP,/*静止*/

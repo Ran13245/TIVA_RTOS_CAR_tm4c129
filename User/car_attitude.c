@@ -58,6 +58,7 @@ void Car_Attitude_Update_Output(void){
     else {
 #if     V_ANGLE_PID
         v_z+=PID_Cal_Inc(&car_attitude.pid_v_angle,car_attitude.current_v_angle,car_attitude.target_v_angle);
+        printf_user(CONSOLE_UART, "v_angle_set:%.2f\r\n",v_z*FRAME_W_HALF_REC*RAD_TO_DEGREE);
 #else
         v_z=car_attitude.target_v_angle*FRAME_W_HALF*DEGREE_TO_RAD;
 #endif
@@ -74,11 +75,16 @@ void Car_Attitude_Update_Output(void){
  * @param v_angle_target 目标角速度,degree/s
  */
 void Set_Car_Attitude(float v_line_target,float v_angle_target){
+    v_line_target=v_line_target>MAX_V_REAL?MAX_V_REAL:v_line_target;
+    v_line_target=v_line_target<-MAX_V_REAL?-MAX_V_REAL:v_line_target;
+    v_angle_target=v_angle_target>MAX_V_ANGLE?MAX_V_ANGLE:v_angle_target;
+    v_angle_target=v_angle_target<-MAX_V_ANGLE?-MAX_V_ANGLE:v_angle_target;
+
     car_attitude.target_v_line=v_line_target;
     car_attitude.target_v_angle=v_angle_target;
-    // car_attitude.target_v_z=v_angle_target*FRAME_W_HALF*DEGREE_TO_RAD;
     if(car_attitude.target_v_line==0 && car_attitude.target_v_angle==0)Set_Car_Stop();
     else Set_Car_Start();
+    // PID_Clear(&car_attitude.pid_v_angle);
 }
 
 

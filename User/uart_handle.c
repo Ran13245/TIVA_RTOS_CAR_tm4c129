@@ -21,6 +21,12 @@ void UartCallBack_USB(void){
 
 void UartCallBack_BLE(void){
 #ifdef BLE_UART
+    Set_Car_Control(0,0,720);
+
+    // if(uart_ble.receive[1]=='a')
+    //     Set_Car_Attitude(0,30);
+    // else 
+    //     Set_Car_Attitude(0,0);
     Uart_DMA_Trans(CONSOLE_UART,uart_ble.receive,uart_ble.len);
 #endif
 }
