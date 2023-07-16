@@ -5,7 +5,7 @@ _car_control car_control;
 
 static void get_current_distance(void);
 static void get_current_spin_angle(void);
-
+static float add_bias(float target,bool if_spin);
 /*!
  * @brief 初始化小车控制
  * @param  
@@ -32,37 +32,45 @@ void init_Car_Contorl(void){
  * @param angle degree
  */
 void Set_Car_Control(float x, float y, float angle){
-    if(y==0 && x!=0 && angle==0){
-        car_control.mode=GO_LINE;
-        car_control.target_line_distance=x;
-        Wheel_Clear_Distance();
-        PID_Clear(&car_control.pid_line_pos);
-        PID_Clear(&car_attitude.pid_v_angle);
+#if ANTI_SPIN_INT
+    if(car_control.spin_parameter.if_enable_interrupt){
+#endif
+        if(y==0 && x!=0 && angle==0){
+            car_control.mode=GO_LINE;
+            car_control.target_line_distance=x;
+            Wheel_Clear_Distance();
+            PID_Clear(&car_control.pid_line_pos);
+            PID_Clear(&car_attitude.pid_v_angle);
+            car_control.spin_parameter.if_enable_interrupt=1;
+        }
+        else if(y!=0 && x!=0 && angle==0){
+            car_control.mode=TO_POINT;
+            car_control.to_point_parameter.dir=y>0?1.0F:-1.0F;
+            y=fabsf(y);
+            car_control.to_point_parameter.R=(x*x+y*y)/(2*y);
+            car_control.target_line_distance=car_control.to_point_parameter.R * asin(x/car_control.to_point_parameter.R);
+            Wheel_Clear_Distance();
+            PID_Clear(&car_control.pid_line_pos);
+            PID_Clear(&car_attitude.pid_v_angle);
+            car_control.spin_parameter.if_enable_interrupt=1;
+        }
+        else if(x==0 && angle!=0){
+            car_control.mode=SPIN;
+            car_control.target_spin_angle=angle;
+            car_control.spin_parameter.interrupt_tolerance=fabsf(angle)*SPIN_INT_RATE;
+            car_control.spin_parameter.start_yaw=car_attitude.yaw;
+            car_control.spin_parameter.r=fabsf(y);
+            car_control.spin_parameter.circles=0;
+            car_control.spin_parameter.if_enable_interrupt=0;
+            PID_Clear(&car_control.pid_spin);
+            PID_Clear(&car_attitude.pid_v_angle);
+        }
+        else{
+            car_control.mode=STOP;
+        }
+#if ANTI_SPIN_INT
     }
-    else if(y!=0 && x!=0 && angle==0){
-        car_control.mode=TO_POINT;
-        car_control.to_point_parameter.dir=y>0?1.0F:-1.0F;
-        y=fabsf(y);
-        car_control.to_point_parameter.R=(x*x+y*y)/(2*y);
-        car_control.target_line_distance=car_control.to_point_parameter.R * asin(x/car_control.to_point_parameter.R);
-        Wheel_Clear_Distance();
-        PID_Clear(&car_control.pid_line_pos);
-        PID_Clear(&car_attitude.pid_v_angle);
-    }
-    else if(x==0 && angle!=0){
-        car_control.mode=SPIN;
-        car_control.target_spin_angle=angle;
-        car_control.spin_parameter.interrupt_tolerance=fabsf((angle+BIAS_ANGLE)*SPIN_INT_RATE);
-        car_control.spin_parameter.start_yaw=car_attitude.yaw;
-        car_control.spin_parameter.r=fabsf(y);
-        car_control.spin_parameter.circles=0;
-        car_control.spin_parameter.if_enable_interrupt=0;
-        PID_Clear(&car_control.pid_spin);
-        PID_Clear(&car_attitude.pid_v_angle);
-    }
-    else{
-        car_control.mode=STOP;
-    }
+#endif
 }
 
 /*!
@@ -91,9 +99,10 @@ void Car_Control_Update_Input(void){
         case SPIN:{
             get_current_spin_angle();
             if(fabsf(car_control.current_spin_angle - car_control.target_spin_angle) < BIAS_ANGLE) {
+                car_control.spin_parameter.if_enable_interrupt=1;
                 Set_Car_Control(0,0,0);
             }
-            if(fabsf(car_control.current_spin_angle - car_control.target_spin_angle) > car_control.spin_parameter.interrupt_tolerance){
+            if(fabsf(car_control.current_spin_angle - car_control.target_spin_angle) <  add_bias(car_control.spin_parameter.interrupt_tolerance,1)){
                 car_control.spin_parameter.if_enable_interrupt=1;
             }
             break;
@@ -115,20 +124,20 @@ void Car_Control_Update_Output(void){
     switch (car_control.mode)
     {
         case GO_LINE:{
-            target_v_line=PID_Cal_Pos(&car_control.pid_line_pos,car_control.current_line_distance,car_control.target_line_distance + BIAS_LINE);
+            target_v_line=PID_Cal_Pos(&car_control.pid_line_pos,car_control.current_line_distance, add_bias(car_control.target_line_distance,0));
             Set_Car_Attitude(target_v_line,0);
             break;
         }
             
         case TO_POINT:{
-            target_v_line=PID_Cal_Pos(&car_control.pid_line_pos,car_control.current_line_distance,car_control.target_line_distance + BIAS_LINE);
+            target_v_line=PID_Cal_Pos(&car_control.pid_line_pos,car_control.current_line_distance,add_bias(car_control.target_line_distance,0));
             target_v_angle=car_control.to_point_parameter.dir * target_v_line / car_control.to_point_parameter.R * RAD_TO_DEGREE;
             Set_Car_Attitude(target_v_line,target_v_angle);
             break;
         }
             
         case SPIN:{
-            target_v_angle=PID_Cal_Pos(&car_control.pid_spin,car_control.current_spin_angle,car_control.target_spin_angle + BIAS_ANGLE);
+            target_v_angle=PID_Cal_Pos(&car_control.pid_spin,car_control.current_spin_angle, add_bias(car_control.target_spin_angle,1));
             target_v_line=fabsf(target_v_angle)*DEGREE_TO_RAD*car_control.spin_parameter.r;
             Set_Car_Attitude(target_v_line,target_v_angle);
             break;
@@ -150,3 +159,23 @@ void get_current_spin_angle(void){
     car_control.current_spin_angle = car_control.spin_parameter.circles*360.0F + car_attitude.yaw - car_control.spin_parameter.start_yaw;
 }
 
+float add_bias(float target,bool if_spin){
+    bool signal = target < 0;
+    if(if_spin){
+        if(signal){
+            return target - BIAS_ANGLE;
+        }
+        else{
+            return target + BIAS_ANGLE;
+        }
+    }
+    else{
+        if(signal){
+            return target - BIAS_LINE;
+        }
+        else{
+            return target + BIAS_LINE;
+        }
+    }
+    
+}

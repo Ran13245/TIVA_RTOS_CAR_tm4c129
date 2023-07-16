@@ -7,7 +7,8 @@
 
 #define BIAS_LINE   10.0F
 #define BIAS_ANGLE  3.0F
-#define SPIN_INT_RATE   0.7F /*spin超过目标值的多少倍后允许被打断*/
+#define ANTI_SPIN_INT   1/*是否在spin时屏蔽其他指令*/
+#define SPIN_INT_RATE   0.5F /*spin剩余量小于该比例后允许被打断*/
 
 typedef enum __car_mode{
     DISABLE=0,/*禁用,直接控制car_attitude姿态*/
