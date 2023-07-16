@@ -22,6 +22,7 @@ typedef struct __to_point_parameter
 {
     float dir;//旋转方向,以逆时针为1,顺时针为-1
     float R;//运动半径
+    float v_bias;//预设速度
 }_to_point_parameter;
 
 typedef struct __spin_parameter
@@ -51,6 +52,7 @@ extern _car_control car_control;
 
 void init_Car_Contorl(void);
 void Set_Car_Control(float x, float y, float angle);
+void Set_Car_V_Bias(float v_bias);
 void Car_Control_Update_Input(void);
 void Car_Control_Update_Output(void);
 
