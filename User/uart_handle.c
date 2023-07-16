@@ -27,6 +27,7 @@ void UartCallBack_USB(void){
 
 void UartCallBack_BLE(void){
 #ifdef BLE_UART
+Set_Car_Control(0,500,1800);
     Uart_DMA_Trans(CONSOLE_UART,uart_ble.receive,uart_ble.len);
 #endif
 }
@@ -53,18 +54,19 @@ void UartCallBack_K210(void){
     uint8_t flag_neg_y=uart_k210.receive[3];
     if(flag_neg_y)y=-y;
     uint8_t mode=uart_k210.receive[1];
-static uint8_t last_mode=0;
+
     if(mode==0){
         Set_Car_Control(0,0,0);
     }
-    if(mode==1&&car_control.spin_parameter.if_enable_interrupt){
-        Set_Car_Control(x,y,0);
+    if(mode==1){
+        Set_Car_Control(6*x,y,0);
     }
-    if(mode==2 && last_mode!=2){
+    if(mode==2){
         Set_Car_Control(0,0,-90);
     }
-    last_mode=mode;
-    Uart_DMA_Trans(CONSOLE_UART,uart_k210.receive,uart_k210.len);
+
+    // Uart_DMA_Trans(CONSOLE_UART,uart_k210.receive[1],1);
+    printf_user(CONSOLE_UART,"%d\r\n",mode);
 #endif
 }
 
