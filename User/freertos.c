@@ -230,6 +230,7 @@ if(up_begin&&car_attitude.updated){
 		}
 }
 		car_attitude.updated=0;
+		car_control.updated=0;
 	}
 }
 
