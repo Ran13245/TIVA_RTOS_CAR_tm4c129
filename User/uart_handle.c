@@ -30,6 +30,7 @@ void UartCallBack_USB(void){
 
 void UartCallBack_BLE(void){
 #ifdef BLE_UART
+Set_Car_Control(380,20,0);
     Uart_DMA_Trans(CONSOLE_UART,uart_ble.receive,uart_ble.len);
 #endif
 }
@@ -44,11 +45,7 @@ void UartCallBack_JET(void){
     // Uart_DMA_Trans(CONSOLE_UART,uart_jetson.receive,uart_jetson.len);
     // Download_From_JTS();
     // Set_target_servo_flag(uart_jetson.receive[1],(short)uart_jetson.receive[2]<<8|uart_jetson.receive[3]);
-    short x,y;
-    x=(short)uart_jetson.receive[2]<<8|uart_jetson.receive[3];
-    y=(short)uart_jetson.receive[4]<<8|uart_jetson.receive[5];
-    Set_Car_Control(x,y,0);
-    printf_user(CONSOLE_UART,"%d,%d\r\n",x,y);
+
 
 #endif
 }

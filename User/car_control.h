@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include "pid.h"
 
-#define BIAS_LINE   10.0F
+#define BIAS_LINE   200.0F
 #define BIAS_ANGLE  3.0F
 #define ANTI_SPIN_INT   1/*是否在spin时屏蔽其他指令*/
 #define SPIN_INT_RATE   0.5F /*spin剩余量小于该比例后允许被打断*/
