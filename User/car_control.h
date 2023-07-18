@@ -7,8 +7,8 @@
 
 #define BIAS_LINE   10.0F
 #define BIAS_ANGLE  3.0F
-#define ANTI_SPIN_INT   1/*是否在spin时屏蔽其他指令*/
 #define SPIN_INT_RATE   0.5F /*spin剩余量小于该比例后允许被打断*/
+#define LINE_INT_RATE   0.5F 
 
 typedef enum __car_mode{
     DISABLE=0,/*禁用,直接控制car_attitude姿态*/
@@ -23,7 +23,9 @@ typedef struct __to_point_parameter
     float dir;//旋转方向,以逆时针为1,顺时针为-1
     float R;//运动半径
     float v_bias;//预设速度
-}_to_point_parameter;
+    float interrupt_tolerance;//走过该长度之后允许被打断
+    bool if_enable_interrupt;//是否已经可以被打断
+}_to_point_parameter; 
 
 typedef struct __spin_parameter
 {
@@ -46,6 +48,7 @@ typedef struct __car_control
     pid pid_spin;
     _to_point_parameter to_point_parameter;
     _spin_parameter spin_parameter;
+    bool oprate_done;
 }_car_control;
 
 extern _car_control car_control;
