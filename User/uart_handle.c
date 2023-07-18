@@ -54,17 +54,19 @@ void UartCallBack_JET(void){
 void UartCallBack_K210(void){
 #ifdef K210_UART	
     uint8_t x=uart_k210.receive[1];
-    int8_t y=uart_k210.receive[3];
     uint8_t flag_neg_y=uart_k210.receive[2];
+    int16_t y=uart_k210.receive[3];
+    uint8_t flag_neg_angle=uart_k210.receive[4];
+    int16_t angle=uart_k210.receive[5];
+    
     if(flag_neg_y)y=-y;
-
+    if(flag_neg_angle)angle=-angle;
    
+    if(!angle)Set_Car_Control(x,y,0);
+    else Set_Car_Control(0,0,angle);
    
-        Set_Car_Control(x,y,0);
-   
-
     // Uart_DMA_Trans(CONSOLE_UART,uart_k210.receive[1],1);
-    printf_user(CONSOLE_UART,"%d,%d\r\n",x,y);
+    printf_user(CONSOLE_UART,"%d,%d,%d\r\n",x,y,angle);
 #endif
 }
 
