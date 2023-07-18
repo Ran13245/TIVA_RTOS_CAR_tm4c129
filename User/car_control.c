@@ -124,13 +124,13 @@ void Car_Control_Update_Output(void){
     switch (car_control.mode)
     {
         case GO_LINE:{
-            target_v_line=PID_Cal_Pos(&car_control.pid_line_pos,car_control.current_line_distance, add_bias(car_control.target_line_distance,0));
-            Set_Car_Attitude(target_v_line + car_control.to_point_parameter.v_bias,0);
+            target_v_line=PID_Cal_Pos(&car_control.pid_line_pos,car_control.current_line_distance, add_bias(car_control.target_line_distance,0))+ car_control.to_point_parameter.v_bias;
+            Set_Car_Attitude(target_v_line,0);
             break;
         }
             
         case TO_POINT:{
-            target_v_line=PID_Cal_Pos(&car_control.pid_line_pos,car_control.current_line_distance,add_bias(car_control.target_line_distance,0));
+            target_v_line=PID_Cal_Pos(&car_control.pid_line_pos,car_control.current_line_distance,add_bias(car_control.target_line_distance,0))+ car_control.to_point_parameter.v_bias;
             target_v_angle=car_control.to_point_parameter.dir * target_v_line / car_control.to_point_parameter.R * RAD_TO_DEGREE;
             Set_Car_Attitude(target_v_line + car_control.to_point_parameter.v_bias,target_v_angle);
             break;

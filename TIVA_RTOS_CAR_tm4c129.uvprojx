@@ -434,6 +434,11 @@
               <FileType>1</FileType>
               <FilePath>.\User\key_handle.c</FilePath>
             </File>
+            <File>
+              <FileName>car_control_vitual.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User\car_control_vitual.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
