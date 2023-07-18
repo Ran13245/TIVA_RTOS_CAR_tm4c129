@@ -26,10 +26,13 @@
 #define         FILTER_FREQ_IMU_GX     25.0F
 #define         FILTER_FREQ_IMU_GY     25.0F
 #define         FILTER_FREQ_IMU_GZ     25.0F
+/*两种控制方式二选一*/
 /*是否使用积分级控制方式*/
 #define         USE_CAR_CONTROL         1
+/*是否使用虚拟位置控制方式*/
+#define         USE_VITUAL_CONTROL      0
 /*硬件定时器中断周期,us*/
-#define         TIM_ITV_US              100
+#define         TIM_ITV_US              20
 
 /**
  * @brief 串口
@@ -40,10 +43,10 @@
     #define         USB_UART         UART2_BASE
     #define         BLE_UART         UART1_BASE
     // #define         Jetson_UART      UART0_BASE
-    // #define         K210_UART        UART3_BASE
+    #define         K210_UART        UART0_BASE
     // #define         OPENMV_UART      UART4_BASE
     /*波形显示串口*/
-    #define         WAVE_UART        USB_UART
+    // #define         WAVE_UART        USB_UART
 #else 
     #define         USB_UART         UART0_BASE
     #define         BLE_UART         UART1_BASE
@@ -108,7 +111,7 @@
 #define         PRIORITY_PORTE      (4<<5)
 
 /*TIM*/
-#define         PRIORITY_TIM        (2<<5)
+#define         PRIORITY_TIM        (1<<5)
 #endif
 
 /**
@@ -117,7 +120,7 @@
  */
 #define         TASK_ITV_CAR        5
 #define         TASK_ITV_IMU        5
-#define         TASK_ITV_UPLOAD     20
+#define         TASK_ITV_UPLOAD     50
 
 /**
  * @brief 小车参数
@@ -182,24 +185,32 @@
 #define         LIMIT_INC_POS           MAX_V_REAL*0.5F                              /*单位:mm/s,直线速度*/
 #define         LIMIT_INC_SPIN          MAX_V_ANGLE                               /*单位:degree/s,角速度*/
 #define         LIMIT_INC_V_ANGLE       0.5F*MAX_V_ANGLE*FRAME_W_HALF*DEGREE_TO_RAD                              /*单位:mm/s,角速度补偿速度*/
+#define         LIMIT_INC_VITUAL_X      0.0F        /*单位百分比,线速度*/
+#define         LIMIT_INC_VITUAL_Y      0.0F        /*单位百分比,角速度*/
 
 //位置式PID限幅,PWM占空比100%对应PID的1000
 #define         LIMIT_POS_LF            (MAX_MOTOR_DUTY*1000)
 #define         LIMIT_POS_LR            (MAX_MOTOR_DUTY*1000)
 #define         LIMIT_POS_RF            (MAX_MOTOR_DUTY*1000)
 #define         LIMIT_POS_RR            (MAX_MOTOR_DUTY*1000)
-#define         LIMIT_POS_POS           MAX_V_REAL*0.5F 
+#define         LIMIT_POS_POS           MAX_V_REAL 
 #define         LIMIT_POS_SPIN          MAX_V_ANGLE
 #define         LIMIT_POS_V_ANGLE       MAX_V_ANGLE*FRAME_W_HALF*DEGREE_TO_RAD
+#define         LIMIT_POS_VITUAL_X      100.0F
+#define         LIMIT_POS_VITUAL_Y      100.0F
 
 //位置式PID积分限幅
-#define         LIMIT_ITGR_LF           (MAX_MOTOR_DUTY*1000)
-#define         LIMIT_ITGR_LR           (MAX_MOTOR_DUTY*1000)
-#define         LIMIT_ITGR_RF           (MAX_MOTOR_DUTY*1000)
-#define         LIMIT_ITGR_RR           (MAX_MOTOR_DUTY*1000)
-#define         LIMIT_ITGR_POS          1.0F
-#define         LIMIT_ITGR_SPIN         1.0F
-#define         LIMIT_ITGR_V_ANGLE      LIMIT_POS_V_ANGLE*100000
+#define         LIMIT_ITGR_MAX          1000000000.0F
+#define         LIMIT_ITGR_LF           LIMIT_ITGR_MAX
+#define         LIMIT_ITGR_LR           LIMIT_ITGR_MAX
+#define         LIMIT_ITGR_RF           LIMIT_ITGR_MAX
+#define         LIMIT_ITGR_RR           LIMIT_ITGR_MAX
+#define         LIMIT_ITGR_POS          LIMIT_ITGR_MAX
+#define         LIMIT_ITGR_SPIN         LIMIT_ITGR_MAX
+#define         LIMIT_ITGR_V_ANGLE      LIMIT_ITGR_MAX
+#define         LIMIT_ITGR_VITUAL_X     LIMIT_ITGR_MAX
+#define         LIMIT_ITGR_VITUAL_Y     LIMIT_ITGR_MAX
+
 
 /**
  * @brief PID参数
@@ -212,6 +223,8 @@
 #define         P_POS           1.0F    //位置
 #define         P_SPIN          2.0F    //原地旋转
 #define         P_V_ANGLE       11.5F    //角速度
+#define         P_VITAUL_X      1.0F
+#define         P_VITAUL_Y      1.0F
 
 #define         I_LF            0.01F
 #define         I_LR            0.01F
@@ -220,6 +233,8 @@
 #define         I_POS           0.0F
 #define         I_SPIN          0.0F
 #define         I_V_ANGLE       0.15F
+#define         I_VITAUL_X      0.0F
+#define         I_VITAUL_Y      0.0F
 
 #define         D_LF            0.0F
 #define         D_LR            0.0F
@@ -228,7 +243,8 @@
 #define         D_POS           0.0F
 #define         D_SPIN          0.0F
 #define         D_V_ANGLE       6.0F
-
+#define         D_VITAUL_X      100.0F
+#define         D_VITAUL_Y      0.0F
 
 
 
