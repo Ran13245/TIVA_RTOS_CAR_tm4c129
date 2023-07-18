@@ -181,7 +181,9 @@ void Task_CarAttitude(void* pvParameters){
 		Motor_Update_Input_All();
 		Car_Attitude_Update_Input();
 		Car_Control_Update_Input();
+		Car_Control_Vitual_Update_Input();
 		
+		Car_Control_Vitual_Update_Output();
 		Car_Control_Update_Output();
 		Car_Attitude_Update_Output();
 		Motor_Update_Output_All();

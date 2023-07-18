@@ -69,6 +69,7 @@ static void BSP_Init(void){
 	init_Car_Attitude();
 	Set_Car_Attitude(0,0);
 	init_Car_Contorl();
+	init_Car_Control_Vitual();
 	// BLE_AT_Set();
 	delay_ms(200);
 	init_drv_tim();
