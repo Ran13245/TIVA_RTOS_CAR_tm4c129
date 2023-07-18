@@ -21,13 +21,15 @@ void UartCallBack_USB(void){
     // Servo_Set_Degree_All(angle_lr,angle_ud);
     // printf_user(CONSOLE_UART,"%.2f,%.2f\r\n",angle_lr,angle_ud);
     // Uart_DMA_Trans(BLE_UART,&uart_usb.receive[1],uart_usb.len-2);//设置蓝牙用
+    // Set_Car_Control_Vitual((short)uart_usb.receive[1],(short)uart_usb.receive[2]);
+    // Set_Car_Control(50,0,0);
+    // Set_Car_V_Bias(300);
 #endif
 }
 
 
 void UartCallBack_BLE(void){
 #ifdef BLE_UART
-Set_Car_Control(0,500,1800);
     Uart_DMA_Trans(CONSOLE_UART,uart_ble.receive,uart_ble.len);
 #endif
 }
@@ -39,9 +41,14 @@ void UartCallBack_JET(void){
     // jts_to_mcu.target_v_z_L=uart_jetson.receive[6];
     // jts_to_mcu.target_v_x_H=uart_jetson.receive[3];
     // jts_to_mcu.target_v_x_L=uart_jetson.receive[4];
-    Uart_DMA_Trans(CONSOLE_UART,uart_jetson.receive,uart_jetson.len);
+    // Uart_DMA_Trans(CONSOLE_UART,uart_jetson.receive,uart_jetson.len);
     // Download_From_JTS();
-    Set_target_servo_flag(uart_jetson.receive[1],(short)uart_jetson.receive[2]<<8|uart_jetson.receive[3]);
+    // Set_target_servo_flag(uart_jetson.receive[1],(short)uart_jetson.receive[2]<<8|uart_jetson.receive[3]);
+    short x,y;
+    x=(short)uart_jetson.receive[2]<<8|uart_jetson.receive[3];
+    y=(short)uart_jetson.receive[4]<<8|uart_jetson.receive[5];
+    Set_Car_Control(x,y,0);
+    printf_user(CONSOLE_UART,"%d,%d\r\n",x,y);
 
 #endif
 }
@@ -49,24 +56,18 @@ void UartCallBack_JET(void){
 
 void UartCallBack_K210(void){
 #ifdef K210_UART	
-    uint8_t x=uart_k210.receive[2];
-    int8_t y=uart_k210.receive[4];
-    uint8_t flag_neg_y=uart_k210.receive[3];
+    uint8_t x=uart_k210.receive[1];
+    int8_t y=uart_k210.receive[3];
+    uint8_t flag_neg_y=uart_k210.receive[2];
     if(flag_neg_y)y=-y;
-    uint8_t mode=uart_k210.receive[1];
 
-    if(mode==0){
-        Set_Car_Control(0,0,0);
-    }
-    if(mode==1){
-        Set_Car_Control(6*x,y,0);
-    }
-    if(mode==2){
-        Set_Car_Control(0,0,-90);
-    }
+   
+   
+        Set_Car_Control(x,y,0);
+   
 
     // Uart_DMA_Trans(CONSOLE_UART,uart_k210.receive[1],1);
-    printf_user(CONSOLE_UART,"%d\r\n",mode);
+    printf_user(CONSOLE_UART,"%d,%d\r\n",x,y);
 #endif
 }
 
