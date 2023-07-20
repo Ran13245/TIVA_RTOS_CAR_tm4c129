@@ -48,7 +48,7 @@ typedef struct __car_control
     _spin_parameter spin_parameter;
     bool oprate_done;
     bool if_enable_interrupt;
-    bool updated;
+    uint8_t updated;/*0:未上传 1:上传INTACK 2:上传DONEACK*/
 }_car_control;
 
 extern _car_control car_control;
