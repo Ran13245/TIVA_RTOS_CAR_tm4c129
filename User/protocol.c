@@ -216,10 +216,15 @@ void Download_From_JTS(void){
 }
 #endif
 
+uint8_t tmpupload[5]={0x2c,0x12,0x01,0x01,0x5b};
 void Upload_Car_IntEnableAck(void){
+	tmpupload[3]=0x02;
+	Uart_DMA_Trans(K210_UART,tmpupload,5);
 	printf_user(CONSOLE_UART,"int\r\n");
 }
 
 void Upload_Car_OperateDoneAck(void){
+	tmpupload[3]=0x03;
+	Uart_DMA_Trans(K210_UART,tmpupload,5);
 	printf_user(CONSOLE_UART,"done\r\n");
 }

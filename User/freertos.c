@@ -208,7 +208,7 @@ void Task_VoltageUpdate(void* pvParameters){
  * @brief 数据上传到上位机
  * @param pvParameters 
  */
-uint8_t tmpupload[5]={0x2c,0x12,0x01,0x01,0x5b};
+
 bool up_begin=0;
 void Task_DataUpload(void* pvParameters){
 	TickType_t xLastWakeTime;
