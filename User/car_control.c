@@ -7,6 +7,10 @@ static void get_current_distance(void);
 static void get_current_spin_angle(void);
 static float add_bias(float target,bool if_spin);
 static void clear_car_control(void);
+
+extern void Upload_Car_IntEnableAck(void);
+extern void Upload_Car_OperateDoneAck(void);
+
 /*!
  * @brief 初始化小车控制
  * @param  
@@ -16,19 +20,16 @@ void init_Car_Contorl(void){
     Set_PID_Limit(&car_control.pid_spin,LIMIT_INC_SPIN,LIMIT_POS_SPIN,LIMIT_ITGR_SPIN);
     Set_PID(&car_control.pid_line_pos,P_POS,I_POS,D_POS);
     Set_PID(&car_control.pid_spin,P_SPIN,I_SPIN,D_SPIN);
-    car_control.spin_parameter.if_enable_interrupt=1;
-    car_control.to_point_parameter.if_enable_interrupt=1;
 }
 
 void clear_car_control(void){
     car_control.oprate_done=0;
+    car_control.if_enable_interrupt=0;
     car_control.spin_parameter.start_yaw=car_attitude.yaw;
     car_control.spin_parameter.circles=0;
     Wheel_Clear_Distance();
     PID_Clear(&car_control.pid_line_pos);
     PID_Clear(&car_attitude.pid_v_angle);
-    car_control.spin_parameter.if_enable_interrupt=0;
-    car_control.to_point_parameter.if_enable_interrupt=0;
 }
 
 /*!
@@ -102,7 +103,7 @@ void Car_Control_Update_Input(void){
                 Set_Car_Control(0,0,0);
             }
             if(fabsf(car_control.current_line_distance - car_control.target_line_distance) <  car_control.to_point_parameter.interrupt_tolerance){
-                car_control.to_point_parameter.if_enable_interrupt=1;
+                car_control.if_enable_interrupt=1;
                 car_control.updated=1;
             }
             break;
@@ -116,7 +117,7 @@ void Car_Control_Update_Input(void){
                 Set_Car_Control(0,0,0);
             }
             if(fabsf(car_control.current_line_distance - car_control.target_line_distance) <  car_control.to_point_parameter.interrupt_tolerance){
-                car_control.to_point_parameter.if_enable_interrupt=1;
+                car_control.if_enable_interrupt=1;
                 car_control.updated=1;
             }
             break;
@@ -130,7 +131,7 @@ void Car_Control_Update_Input(void){
                 Set_Car_Control(0,0,0);
             }
             if(fabsf(car_control.current_spin_angle - car_control.target_spin_angle) <  car_control.spin_parameter.interrupt_tolerance){
-                car_control.spin_parameter.if_enable_interrupt=1;
+                car_control.if_enable_interrupt=1;
                 car_control.updated=1;
             }
             break;
@@ -140,6 +141,18 @@ void Car_Control_Update_Input(void){
             car_control.updated=1;
             break;
         }
+    }
+}
+
+void Car_Control_Upload(void){
+    if(car_control.updated){
+        if(car_control.oprate_done){
+            Upload_Car_OperateDoneAck();
+        }
+        else if(car_control.if_enable_interrupt){
+            Upload_Car_IntEnableAck();
+        }
+        car_control.updated=0;
     }
 }
 

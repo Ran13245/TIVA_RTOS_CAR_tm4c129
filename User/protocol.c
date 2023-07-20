@@ -215,3 +215,11 @@ void Download_From_JTS(void){
 	Set_Car_Attitude(target_v_line,target_v_z); 
 }
 #endif
+
+void Upload_Car_IntEnableAck(void){
+
+}
+
+void Upload_Car_OperateDoneAck(void){
+
+}

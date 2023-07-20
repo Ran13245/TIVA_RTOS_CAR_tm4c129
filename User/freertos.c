@@ -216,7 +216,7 @@ void Task_DataUpload(void* pvParameters){
 		Upload_To_JTS();
 #endif
 		car_attitude.updated=0;
-		car_control.updated=0;
+		Car_Control_Upload();
 	}
 }
 
