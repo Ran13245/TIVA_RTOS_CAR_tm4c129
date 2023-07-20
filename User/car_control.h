@@ -49,6 +49,7 @@ typedef struct __car_control
     _to_point_parameter to_point_parameter;
     _spin_parameter spin_parameter;
     bool oprate_done;
+    bool updated;
 }_car_control;
 
 extern _car_control car_control;
