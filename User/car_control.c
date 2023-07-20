@@ -42,6 +42,7 @@ void Set_Car_Control(float x, float y, float angle){
         PID_Clear(&car_control.pid_line_pos);
         PID_Clear(&car_attitude.pid_v_angle);
         car_control.to_point_parameter.if_enable_interrupt=0;
+        car_control.spin_parameter.if_enable_interrupt=0;
         car_control.to_point_parameter.interrupt_tolerance=fabsf(car_control.target_line_distance)*LINE_INT_RATE;
 
         car_control.target_line_distance=add_bias(car_control.target_line_distance,0);
@@ -59,6 +60,7 @@ void Set_Car_Control(float x, float y, float angle){
         PID_Clear(&car_control.pid_line_pos);
         PID_Clear(&car_attitude.pid_v_angle);
         car_control.to_point_parameter.if_enable_interrupt=0;
+        car_control.spin_parameter.if_enable_interrupt=0;
         car_control.to_point_parameter.interrupt_tolerance=fabsf(car_control.target_line_distance)*LINE_INT_RATE;
 
         car_control.target_line_distance=add_bias(car_control.target_line_distance,0);
@@ -74,6 +76,7 @@ void Set_Car_Control(float x, float y, float angle){
         
         PID_Clear(&car_control.pid_spin);
         PID_Clear(&car_attitude.pid_v_angle);
+        car_control.to_point_parameter.if_enable_interrupt=0;
         car_control.spin_parameter.if_enable_interrupt=0;
         car_control.spin_parameter.interrupt_tolerance=fabsf(angle)*SPIN_INT_RATE;
 

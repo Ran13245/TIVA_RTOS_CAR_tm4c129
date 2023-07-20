@@ -220,14 +220,17 @@ void Task_DataUpload(void* pvParameters){
 		// Upload_To_JTS();
 #endif
 if(up_begin&&car_control.updated){
-		if(car_control.to_point_parameter.if_enable_interrupt){
-			tmpupload[3]=0x02;
-			Uart_DMA_Trans(K210_UART,tmpupload,5);
-		}
 		if(car_control.oprate_done){
 			tmpupload[3]=0x03;
 			Uart_DMA_Trans(K210_UART,tmpupload,5);
+			// printf_user(CONSOLE_UART,"%d\r\n",3);
 		}
+		else if(car_control.to_point_parameter.if_enable_interrupt){
+			tmpupload[3]=0x02;
+			Uart_DMA_Trans(K210_UART,tmpupload,5);
+			// printf_user(CONSOLE_UART,"%d\r\n",2);
+		}
+		
 }
 		car_attitude.updated=0;
 		car_control.updated=0;

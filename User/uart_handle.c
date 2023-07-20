@@ -42,9 +42,9 @@ void UartCallBack_JET(void){
     // jts_to_mcu.target_v_z_L=uart_jetson.receive[6];
     // jts_to_mcu.target_v_x_H=uart_jetson.receive[3];
     // jts_to_mcu.target_v_x_L=uart_jetson.receive[4];
-    // Uart_DMA_Trans(CONSOLE_UART,uart_jetson.receive,uart_jetson.len);
+    Uart_DMA_Trans(CONSOLE_UART,uart_jetson.receive,uart_jetson.len);
     // Download_From_JTS();
-    // Set_target_servo_flag(uart_jetson.receive[1],(short)uart_jetson.receive[2]<<8|uart_jetson.receive[3]);
+    Set_target_servo_flag(uart_jetson.receive[1],(short)uart_jetson.receive[2]<<8|uart_jetson.receive[3]);
 
 
 #endif
