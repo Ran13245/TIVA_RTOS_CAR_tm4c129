@@ -217,9 +217,9 @@ void Download_From_JTS(void){
 #endif
 
 void Upload_Car_IntEnableAck(void){
-
+	printf_user(CONSOLE_UART,"int\r\n");
 }
 
 void Upload_Car_OperateDoneAck(void){
-
+	printf_user(CONSOLE_UART,"done\r\n");
 }
