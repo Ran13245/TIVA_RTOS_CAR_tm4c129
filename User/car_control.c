@@ -25,6 +25,7 @@ void init_Car_Contorl(void){
 void clear_car_control(void){
     car_control.oprate_done=0;
     car_control.if_enable_interrupt=0;
+    car_control.updated=0;
     car_control.spin_parameter.start_yaw=car_attitude.yaw;
     car_control.spin_parameter.circles=0;
     Wheel_Clear_Distance();
@@ -99,12 +100,10 @@ void Car_Control_Update_Input(void){
             get_current_distance();
             if(fabsf(car_control.current_line_distance - car_control.target_line_distance) <  BIAS_LINE) {
                 car_control.oprate_done=1;
-                car_control.updated=1;
                 Set_Car_Control(0,0,0);
             }
             if(fabsf(car_control.current_line_distance - car_control.target_line_distance) <  car_control.to_point_parameter.interrupt_tolerance){
                 car_control.if_enable_interrupt=1;
-                car_control.updated=1;
             }
             break;
         }
@@ -113,12 +112,10 @@ void Car_Control_Update_Input(void){
             get_current_distance();
             if(fabsf(car_control.current_line_distance - car_control.target_line_distance) < BIAS_LINE) {
                 car_control.oprate_done=1;
-                car_control.updated=1;
                 Set_Car_Control(0,0,0);
             }
             if(fabsf(car_control.current_line_distance - car_control.target_line_distance) <  car_control.to_point_parameter.interrupt_tolerance){
                 car_control.if_enable_interrupt=1;
-                car_control.updated=1;
             }
             break;
         }
@@ -127,32 +124,39 @@ void Car_Control_Update_Input(void){
             get_current_spin_angle();
             if(fabsf(car_control.current_spin_angle - car_control.target_spin_angle) < BIAS_ANGLE) {
                 car_control.oprate_done=1;
-                car_control.updated=1;
                 Set_Car_Control(0,0,0);
             }
             if(fabsf(car_control.current_spin_angle - car_control.target_spin_angle) <  car_control.spin_parameter.interrupt_tolerance){
                 car_control.if_enable_interrupt=1;
-                car_control.updated=1;
             }
             break;
         }
             
         default:{
-            car_control.updated=1;
             break;
         }
     }
 }
 
 void Car_Control_Upload(void){
-    if(car_control.updated){
-        if(car_control.oprate_done){
-            Upload_Car_OperateDoneAck();
+    switch (car_control.updated)
+    {
+        case 0:{
+            if(car_control.if_enable_interrupt){
+                Upload_Car_IntEnableAck();
+                car_control.updated=1;
+            }
+            break;
         }
-        else if(car_control.if_enable_interrupt){
-            Upload_Car_IntEnableAck();
+        case 1:{
+            if(car_control.oprate_done){
+                Upload_Car_OperateDoneAck();
+                car_control.updated=2;
+            }
+            break;
         }
-        car_control.updated=0;
+        default:
+            break;
     }
 }
 
