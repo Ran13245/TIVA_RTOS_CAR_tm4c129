@@ -51,4 +51,7 @@ void Upload_To_JTS(void);
 void Download_From_JTS(void);
 #endif
 
+void Upload_Car_IntEnableAck(void);
+void Upload_Car_OperateDoneAck(void);
+
 #endif

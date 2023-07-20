@@ -24,7 +24,6 @@ typedef struct __to_point_parameter
     float R;//运动半径
     float v_bias;//预设速度
     float interrupt_tolerance;//走过该长度之后允许被打断
-    bool if_enable_interrupt;//是否已经可以被打断
 }_to_point_parameter; 
 
 typedef struct __spin_parameter
@@ -33,7 +32,6 @@ typedef struct __spin_parameter
     int16_t circles;//YAW数据溢出次数,正为360->0(逆时针)
     float start_yaw;//旋转开始时的偏航角
     float interrupt_tolerance;//转过该角度之后允许被打断
-    bool if_enable_interrupt;//是否已经转过可以被打断的角度
 }_spin_parameter;
 
 
@@ -49,6 +47,7 @@ typedef struct __car_control
     _to_point_parameter to_point_parameter;
     _spin_parameter spin_parameter;
     bool oprate_done;
+    bool if_enable_interrupt;
     bool updated;
 }_car_control;
 
@@ -59,5 +58,7 @@ void Set_Car_Control(float x, float y, float angle);
 void Set_Car_V_Bias(float v_bias);
 void Car_Control_Update_Input(void);
 void Car_Control_Update_Output(void);
+
+void Car_Control_Upload(void);
 
 #endif
