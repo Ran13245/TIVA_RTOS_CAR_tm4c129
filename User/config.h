@@ -16,7 +16,7 @@
 /*系统频率,仅作为计算参数,不能用来设置*/
 #define         USER_SYS_FREQ          120000000
 /*----testbench是否启用----*/
-#define         TEST_BENCH      1
+#define         TEST_BENCH      0
 /*是否对IMU数据进行滤波*/
 #define         USE_IMU_FILTER      1
 /*滤波器参数*/

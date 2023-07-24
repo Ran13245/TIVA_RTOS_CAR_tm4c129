@@ -19,10 +19,10 @@ void Enter_Testbench(void){
     // test_print();
     // test_encoder();
     // test_wave();
-    // test_pwm_output();
+    test_pwm_output();
     // test_motor_input();
     // test_motor_pid();
-    test_imu();
+    // test_imu();
     // test_communicate();
     // test_car();
     // test_utils();
@@ -87,9 +87,9 @@ void test_encoder(void){
  */
 void test_pwm_output(void){
     init_drv_PWM();
+    Set_Duty(PWM_SERVO_1_BASE,PWM_SERVO_1_OUT,0.025);
     while (1)
     {
-        Set_Duty(PWM_RR_BASE,PWM_RR_OUT,0.5);
     }
     
 }
