@@ -10,6 +10,8 @@
 #include "car_attitude.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "sensorlib/i2cm_drv.h"
+#include "bsp_i2c.h"
 
 _imu_data_raw imu_data_raw={0};
 _imu_data_float imu_data={0};
@@ -212,44 +214,9 @@ void ICM20602_read_once(void){
 //
 //*****************************************************************
 void ICM20602_ReadData(uint8_t Address,uint8_t Data[],uint8_t Num){
-    //先读低位，再读高位
-    uint8_t data_i=0;
-    //发送地址
-    I2CMasterSlaveAddrSet(ICM20602_I2C_BASE, ICM20602_DEV_ADD, false);
-    I2CMasterDataPut(ICM20602_I2C_BASE, Address);
-    while(I2CMasterBusy(ICM20602_I2C_BASE));
-    I2CMasterControl(ICM20602_I2C_BASE, 0x03);//start之后跟随send,状态空闲->发送  
-    while(I2CMasterBusy(ICM20602_I2C_BASE));
-
-    //接收第一个数据
-    I2CMasterSlaveAddrSet(ICM20602_I2C_BASE, ICM20602_DEV_ADD, true);
-    I2CMasterControl(ICM20602_I2C_BASE, 0x0b);//重复start之后接收，状态发送->接收
-    while(I2CMasterBusy(ICM20602_I2C_BASE));
-    Data[0] = I2CMasterDataGet(ICM20602_I2C_BASE);
-    data_i+=1;
-    Num-=1;
-
-    //接收后续数据
-    while(Num>1){
-        I2CMasterControl(ICM20602_I2C_BASE, 0x09);//接收,状态接收->接收
-        while(I2CMasterBusy(ICM20602_I2C_BASE));
-        Data[data_i] = I2CMasterDataGet(ICM20602_I2C_BASE);
-        data_i+=1;
-        Num-=1;
-    }
-
-    //接收最后一个数据
-    I2CMasterControl(ICM20602_I2C_BASE, 0x01);//非应答接收，状态接收->接收
-    while(I2CMasterBusy(ICM20602_I2C_BASE));
-    Data[data_i] = I2CMasterDataGet(ICM20602_I2C_BASE);
-
-    //发送stop条件
-    I2CMasterControl(ICM20602_I2C_BASE, 0x04);//stop条件,状态接收->空闲
-    while(I2CMasterBusy(ICM20602_I2C_BASE));
-
-    if(I2CMasterErr(ICM20602_I2C_BASE) != I2C_MASTER_ERR_NONE){
-        ICM20602_err_handle();
-    }
+    I2C8MDone=false;
+    I2CMRead(&I2C8MInst,ICM20602_DEV_ADD,&Address,1,Data,Num,I2C8MCallback,0);
+    while(!I2C8MDone);
 }
 
 
@@ -262,21 +229,9 @@ void ICM20602_ReadData(uint8_t Address,uint8_t Data[],uint8_t Num){
 //
 //*****************************************************************
 void ICM20602_WriteByte(uint8_t Address,uint8_t Data){
-    //发送地址
-    I2CMasterSlaveAddrSet(ICM20602_I2C_BASE, ICM20602_DEV_ADD, false);
-    I2CMasterDataPut(ICM20602_I2C_BASE, Address);
-    while(I2CMasterBusy(ICM20602_I2C_BASE));
-    I2CMasterControl(ICM20602_I2C_BASE, 0x03);//start之后跟随send,状态空闲->发送
-    while(I2CMasterBusy(ICM20602_I2C_BASE));
-
-    //发送数据
-    I2CMasterDataPut(ICM20602_I2C_BASE, Data);
-    I2CMasterControl(ICM20602_I2C_BASE, 0x05);//发送之后stop,状态发送->空闲
-    while(I2CMasterBusy(ICM20602_I2C_BASE));
-
-    if(I2CMasterErr(ICM20602_I2C_BASE) != I2C_MASTER_ERR_NONE){
-        ICM20602_err_handle();
-    }
+    I2C8MDone=false;
+    I2CMWrite8(&I2C8MWriteByteInst,&I2C8MInst,ICM20602_DEV_ADD,Address,&Data,1,I2C8MCallback,0);
+    while(!I2C8MDone);
 }
 
 
@@ -289,27 +244,9 @@ void ICM20602_WriteByte(uint8_t Address,uint8_t Data){
 //*****************************************************************
 uint8_t ICM20602_ReadByte(uint8_t Address){
     uint8_t Data;
-    //先发送地址
-    I2CMasterSlaveAddrSet(ICM20602_I2C_BASE, ICM20602_DEV_ADD, false);
-    I2CMasterDataPut(ICM20602_I2C_BASE, Address);
-    while(I2CMasterBusy(ICM20602_I2C_BASE));
-    I2CMasterControl(ICM20602_I2C_BASE, 0x03);//start之后跟随send,状态空闲->发送
-    while(I2CMasterBusy(ICM20602_I2C_BASE));
-
-    //读取一个数据
-    I2CMasterSlaveAddrSet(ICM20602_I2C_BASE, ICM20602_DEV_ADD, true);
-    I2CMasterControl(ICM20602_I2C_BASE, 0x03);//重复start之后非应答接收,状态发送->接收
-    while(I2CMasterBusy(ICM20602_I2C_BASE));
-    Data = I2CMasterDataGet(ICM20602_I2C_BASE);
-
-    //发送stop条件
-    I2CMasterControl(ICM20602_I2C_BASE, 0x04);//stop条件,状态接收->空闲
-    while(I2CMasterBusy(ICM20602_I2C_BASE));
-
-    //错误处理
-    if(I2CMasterErr(ICM20602_I2C_BASE) != I2C_MASTER_ERR_NONE){
-        ICM20602_err_handle();
-    }
+    I2C8MDone=false;
+    I2CMRead(&I2C8MInst,ICM20602_DEV_ADD,&Address,1,&Data,1,I2C8MCallback,0);
+    while(!I2C8MDone);
     return Data;
 }
 

@@ -779,6 +779,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>Lib/sensorlib</GroupName>
+          <Files>
+            <File>
+              <FileName>i2cm_drv.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Lib\sensorlib\i2cm_drv.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
   </Targets>

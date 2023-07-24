@@ -21,8 +21,8 @@ void Enter_Testbench(void){
     // test_wave();
     // test_pwm_output();
     // test_motor_input();
-    test_motor_pid();
-    // test_imu();
+    // test_motor_pid();
+    test_imu();
     // test_communicate();
     // test_car();
     // test_utils();
