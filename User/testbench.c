@@ -19,13 +19,14 @@ void Enter_Testbench(void){
     // test_print();
     // test_encoder();
     // test_wave();
-    test_pwm_output();
+    // test_pwm_output();
     // test_motor_input();
     // test_motor_pid();
     // test_imu();
     // test_communicate();
     // test_car();
     // test_utils();
+    test_servo();
     while(1);
 
 }
@@ -87,7 +88,7 @@ void test_encoder(void){
  */
 void test_pwm_output(void){
     init_drv_PWM();
-    Set_Duty(PWM_SERVO_1_BASE,PWM_SERVO_1_OUT,0.025);
+    Set_Duty(PWM_SERVO_1_BASE,PWM_SERVO_1_OUT,0.075);
     while (1)
     {
     }
@@ -232,6 +233,16 @@ void test_utils(void){
         delay_ms(2000);
     }
     
+}
+
+void test_servo(void){
+    init_drv_PWM();
+    init_servo();
+    Set_Servo_Angle(&servo_1,90);
+    while (1)
+    {
+        /* code */
+    }
 }
 
 #endif

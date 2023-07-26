@@ -449,6 +449,11 @@
               <FileType>1</FileType>
               <FilePath>.\User\application\application.c</FilePath>
             </File>
+            <File>
+              <FileName>app_holder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User\application\app_holder.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -518,6 +523,11 @@
               <FileName>software_pwm.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\User\bsp\software_pwm.c</FilePath>
+            </File>
+            <File>
+              <FileName>servo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User\bsp\servo.c</FilePath>
             </File>
           </Files>
         </Group>

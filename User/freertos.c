@@ -15,6 +15,7 @@
 #include "main.h"
 
 #include "bsp.h"
+#include "application.h"
 
 SemaphoreHandle_t semphr_uart_receive = NULL;
 QueueHandle_t queue_key = NULL;
@@ -187,6 +188,8 @@ void Task_CarAttitude(void* pvParameters){
 		Car_Control_Update_Output();
 		Car_Attitude_Update_Output();
 		Motor_Update_Output_All();
+
+		App_Update_Holder_All();
 	}
 
 }

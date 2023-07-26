@@ -15,6 +15,7 @@ void test_wave(void);
 void test_pwm_output(void);
 void test_motor_input(void);
 void test_utils(void);
+void test_servo(void);
 #endif
 
 #endif

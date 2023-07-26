@@ -54,6 +54,7 @@ static void BSP_Init(void){
 	init_drv_ADC();
 	init_drv_PWM();
 	init_motor();
+	init_servo();
 	Set_LED(1,1,1);
 	delay_ms(2000);
 	printf_user(CONSOLE_UART,"Init IMU\r\n");
