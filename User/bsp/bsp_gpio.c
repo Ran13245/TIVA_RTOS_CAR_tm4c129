@@ -48,6 +48,11 @@ void init_drv_GPIO(void){
     GPIOPinTypeGPIOOutput(LEDG_GPIO_Port, LEDG_Pin);
     GPIOPinTypeGPIOOutput(LEDB_GPIO_Port, LEDB_Pin);
 
+    GPIOPinTypeGPIOOutput(OLED_SCLK_GPIO_Port, OLED_SCLK_Pin);
+    GPIOPinTypeGPIOOutput(OLED_MOSI_GPIO_Port, OLED_MOSI_Pin);
+    GPIOPinTypeGPIOOutput(OLED_RST_GPIO_Port, OLED_RST_Pin);
+    GPIOPinTypeGPIOOutput(OLED_DC_GPIO_Port, OLED_DC_Pin);
+
     GPIOPinTypeGPIOOutput(LFMotor_RotateDirectionCtrl1_GPIO_Port, LFMotor_RotateDirectionCtrl1_Pin);
     GPIOPinTypeGPIOOutput(LFMotor_RotateDirectionCtrl2_GPIO_Port, LFMotor_RotateDirectionCtrl2_Pin);
     GPIOPinTypeGPIOOutput(LRMotor_RotateDirectionCtrl1_GPIO_Port, LRMotor_RotateDirectionCtrl1_Pin);

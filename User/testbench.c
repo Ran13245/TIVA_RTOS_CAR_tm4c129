@@ -26,7 +26,8 @@ void Enter_Testbench(void){
     // test_communicate();
     // test_car();
     // test_utils();
-    test_servo();
+    // test_servo();
+    test_oled();
     while(1);
 
 }
@@ -243,6 +244,19 @@ void test_servo(void){
     {
         /* code */
     }
+}
+
+void test_oled(){
+    Set_LED(0,0,0);
+    OLED_Init();
+    // OLED_ShowChar(0,0,'A');
+    // OLED_ShowChar(10,0,'A');
+    OLED_ShowString(0,0,"testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest");
+    while (1)
+    {
+        /* code */
+    }
+    
 }
 
 #endif

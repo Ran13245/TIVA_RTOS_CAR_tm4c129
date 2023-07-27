@@ -534,6 +534,11 @@
               <FileType>1</FileType>
               <FilePath>.\User\bsp\buzzer.c</FilePath>
             </File>
+            <File>
+              <FileName>oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User\bsp\oled.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -53,6 +53,7 @@ static void BSP_Init(void){
 	init_drv_uDMA();
 	init_drv_ADC();
 	init_drv_PWM();
+	OLED_Init();
 	init_motor();
 	init_servo();
 	Set_LED(1,1,1);

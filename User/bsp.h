@@ -56,6 +56,7 @@
 #include "car_control_vitual.h"
 #include "servo.h"
 #include "buzzer.h"
+#include "oled.h"
 
 #include "config.h"
 #include "const.h"

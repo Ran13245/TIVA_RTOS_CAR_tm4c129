@@ -132,4 +132,13 @@
 #define     POWER_PIN       GPIO_PIN_3
 #define     POWER_ADC_BASE  ADC0_BASE
 
+#define     OLED_SCLK_GPIO_Port     GPIO_PORTD_BASE
+#define     OLED_SCLK_Pin           GPIO_PIN_3
+#define     OLED_MOSI_GPIO_Port     GPIO_PORTD_BASE
+#define     OLED_MOSI_Pin           GPIO_PIN_1
+#define     OLED_RST_GPIO_Port     GPIO_PORTD_BASE
+#define     OLED_RST_Pin           GPIO_PIN_2
+#define     OLED_DC_GPIO_Port     GPIO_PORTD_BASE
+#define     OLED_DC_Pin           GPIO_PIN_0
+
 #endif
