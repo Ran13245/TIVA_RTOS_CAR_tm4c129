@@ -18,6 +18,7 @@
 #include "application.h"
 
 SemaphoreHandle_t semphr_uart_receive = NULL;
+SemaphoreHandle_t semphr_buzzer_trigger = NULL;
 QueueHandle_t queue_key = NULL;
 
 static TaskHandle_t AppTaskCreate_Handle = NULL;
@@ -28,6 +29,7 @@ static TaskHandle_t TaskHandle_CarAttitude = NULL;
 static TaskHandle_t TaskHandle_VoltageUpdate = NULL;
 static TaskHandle_t TaskHandle_DataUpload = NULL;
 static TaskHandle_t TaskHandle_Key = NULL;
+static TaskHandle_t TaskHandle_Buzzer = NULL;
 
 static void AppTaskCreate(void* pvParameters);
 static void Task_LEDBlink(void* pvParameters);
@@ -37,6 +39,7 @@ static void Task_CarAttitude(void* pvParameters);
 static void Task_VoltageUpdate(void* pvParameters);
 static void Task_DataUpload(void* pvParameters);
 static void Task_Key(void* pvParameters);
+static void Task_Buzzer(void* pvParameters);
 
 /*!
  * @brief RTOS初始化,启动引导程序
@@ -85,6 +88,10 @@ void AppTaskCreate(void* pvParameters){
 	if(pdPASS == xReturn);
 		printf_user(CONSOLE_UART,"Key\r\n");
 
+	xReturn = xTaskCreate(Task_Buzzer,"Buzzer",128,NULL,1,&TaskHandle_Buzzer);
+	if(pdPASS == xReturn);
+		printf_user(CONSOLE_UART,"Buzzer\r\n");
+
 	xReturn = xTaskCreate(Task_LEDBlink,"LEDBlink",128,NULL,1,&TaskHandle_LEDBlink);
 	if(pdPASS == xReturn);
 		printf_user(CONSOLE_UART,"LEDBlink\r\n");
@@ -97,6 +104,10 @@ void AppTaskCreate(void* pvParameters){
 	semphr_uart_receive = xSemaphoreCreateCounting(RX_QUEUE_SIZE,0);
 	if(semphr_uart_receive != NULL)
 		printf_user(CONSOLE_UART,"uart_receive\r\n");
+
+	semphr_buzzer_trigger = xSemaphoreCreateBinary();
+	if(semphr_buzzer_trigger != NULL)
+		printf_user(CONSOLE_UART,"buzzer_trigger\r\n");
 
 	printf_user(CONSOLE_UART,"-Semaphore List End-\r\n");
 	
@@ -223,7 +234,10 @@ void Task_DataUpload(void* pvParameters){
 	}
 }
 
-
+/*!
+ * @brief 按键服务
+ * @param pvParameters 
+ */
 void Task_Key(void* pvParameters){
 	BaseType_t xReturn = pdPASS;
 	uint8_t key;
@@ -238,3 +252,19 @@ void Task_Key(void* pvParameters){
 	}
 }
 
+/*!
+ * @brief 蜂鸣器服务
+ * @param pvParameters 
+ */
+void Task_Buzzer(void* pvParameters){
+	BaseType_t xReturn = pdPASS;
+	static uint32_t buzzer_start_time=0;
+	for(;;){
+		xReturn = xSemaphoreTake(semphr_buzzer_trigger,0);
+		if(pdTRUE==xReturn){
+			buzzer_start_time=xTaskGetTickCount();
+		}
+		Buzzer_Buzz(buzzer_start_time,xTaskGetTickCount());
+		vTaskDelay(50);
+	}
+}

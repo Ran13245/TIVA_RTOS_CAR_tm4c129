@@ -529,6 +529,11 @@
               <FileType>1</FileType>
               <FilePath>.\User\bsp\servo.c</FilePath>
             </File>
+            <File>
+              <FileName>buzzer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User\bsp\buzzer.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

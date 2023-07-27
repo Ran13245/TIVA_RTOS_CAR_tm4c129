@@ -55,6 +55,7 @@
 #include "software_pwm.h"
 #include "car_control_vitual.h"
 #include "servo.h"
+#include "buzzer.h"
 
 #include "config.h"
 #include "const.h"
