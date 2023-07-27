@@ -1,7 +1,8 @@
 #include "bsp.h"
 
 void KEY0_CallBack(void){
-    printf_user(CONSOLE_UART,"key 0 pressed\r\n");
+    OLED_Print_Clear();
+    // printf_user(CONSOLE_UART,"key 0 pressed\r\n");
 }
 
 void KEY1_CallBack(void){

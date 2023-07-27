@@ -57,6 +57,7 @@
 #include "servo.h"
 #include "buzzer.h"
 #include "oled.h"
+#include "oled_print.h"
 
 #include "config.h"
 #include "const.h"

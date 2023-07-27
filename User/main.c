@@ -54,6 +54,7 @@ static void BSP_Init(void){
 	init_drv_ADC();
 	init_drv_PWM();
 	OLED_Init();
+	init_OLED_Print();
 	init_motor();
 	init_servo();
 	Set_LED(1,1,1);
@@ -91,7 +92,7 @@ int main(void){
 		printf_user(CONSOLE_UART,"Launch RTOS\r\n");
 		IntMasterEnable();
 		portENABLE_INTERRUPTS();
-		printf_user(CONSOLE_UART,"Enable Interrupt\r\n");
+		printf_user(CONSOLE_UART,"Enable Int\r\n");
 		vTaskStartScheduler();
 	}
 	else {

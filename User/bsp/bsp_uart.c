@@ -28,7 +28,7 @@
 #include "config.h"
 #include "hw_gpio.h"
 #include "hw_types.h"
-
+#include "oled_print.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -56,13 +56,20 @@ uart_device uart_openmv={0};
  * 重定义printf
  */
 uint32_t uiBase_stdio=CONSOLE_UART;
+bool use_screen_uart=0;
 int fputc(int ch, FILE* stream)
 {
-#if USE_NON_BLOKING_PUT
-    UARTCharPutNonBlocking(uiBase_stdio, (uint8_t)ch);
-#else
-    UARTCharPut(uiBase_stdio, (uint8_t)ch);
-#endif
+    if(use_screen_uart){
+        OLED_Print_PutChar(ch);
+    }
+    else{
+        #if USE_NON_BLOKING_PUT
+            UARTCharPutNonBlocking(uiBase_stdio, (uint8_t)ch);
+        #else
+            UARTCharPut(uiBase_stdio, (uint8_t)ch);
+        #endif
+    }
+
     return ch;
 }
 
@@ -76,6 +83,13 @@ static void _DeviceRxIntHandler(uint32_t ui32Base, uart_device* device);
  */
 void printf_user(uint32_t uiBase, const char *pcString, ...)
 {
+    if(uiBase==SCREEN_UART){
+        use_screen_uart=1;
+    }
+    else{
+        use_screen_uart=0;
+    }
+
     uiBase_stdio=uiBase;
     va_list vaArgP;
 

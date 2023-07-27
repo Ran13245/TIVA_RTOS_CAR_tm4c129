@@ -30,6 +30,7 @@ static TaskHandle_t TaskHandle_VoltageUpdate = NULL;
 static TaskHandle_t TaskHandle_DataUpload = NULL;
 static TaskHandle_t TaskHandle_Key = NULL;
 static TaskHandle_t TaskHandle_Buzzer = NULL;
+static TaskHandle_t TaskHandle_Screen = NULL;
 
 static void AppTaskCreate(void* pvParameters);
 static void Task_LEDBlink(void* pvParameters);
@@ -40,6 +41,7 @@ static void Task_VoltageUpdate(void* pvParameters);
 static void Task_DataUpload(void* pvParameters);
 static void Task_Key(void* pvParameters);
 static void Task_Buzzer(void* pvParameters);
+static void Task_Screen(void* pvParameters);
 
 /*!
  * @brief RTOS初始化,启动引导程序
@@ -62,7 +64,7 @@ void AppTaskCreate(void* pvParameters){
 	taskENTER_CRITICAL();//进入临界区
 
 /*任务创建*/
-	printf_user(CONSOLE_UART,"-App List-\r\n");
+	printf_user(CONSOLE_UART,"-Task-\r\n");
 
 	xReturn = xTaskCreate(Task_9axisService,"9axisService",2048,NULL,3,&TaskHandle_9axisService);
 	if(pdPASS == xReturn)
@@ -92,14 +94,18 @@ void AppTaskCreate(void* pvParameters){
 	if(pdPASS == xReturn);
 		printf_user(CONSOLE_UART,"Buzzer\r\n");
 
+	xReturn = xTaskCreate(Task_Screen,"Screen",1024,NULL,1,&TaskHandle_Screen);
+	if(pdPASS == xReturn);
+		printf_user(CONSOLE_UART,"Screen\r\n");
+
 	xReturn = xTaskCreate(Task_LEDBlink,"LEDBlink",128,NULL,1,&TaskHandle_LEDBlink);
 	if(pdPASS == xReturn);
 		printf_user(CONSOLE_UART,"LEDBlink\r\n");
 
-	printf_user(CONSOLE_UART,"-App List End-\r\n");
+	printf_user(CONSOLE_UART,"-Task-\r\n");
 
 /*信号量创建*/
-	printf_user(CONSOLE_UART,"-Semaphore List-\r\n");
+	printf_user(CONSOLE_UART,"-Semaphore-\r\n");
 
 	semphr_uart_receive = xSemaphoreCreateCounting(RX_QUEUE_SIZE,0);
 	if(semphr_uart_receive != NULL)
@@ -109,16 +115,16 @@ void AppTaskCreate(void* pvParameters){
 	if(semphr_buzzer_trigger != NULL)
 		printf_user(CONSOLE_UART,"buzzer_trigger\r\n");
 
-	printf_user(CONSOLE_UART,"-Semaphore List End-\r\n");
+	printf_user(CONSOLE_UART,"-Semaphore-\r\n");
 	
 /*队列创建*/
-	printf_user(CONSOLE_UART,"-Queue List-\r\n");
+	printf_user(CONSOLE_UART,"-Queue-\r\n");
 
 	queue_key = xQueueCreate(1,1);
 	if(queue_key != NULL)
 		printf_user(CONSOLE_UART,"key\r\n");
 
-	printf_user(CONSOLE_UART,"-Queue List End-\r\n");
+	printf_user(CONSOLE_UART,"-Queue-\r\n");
 
 
 	vTaskDelete(AppTaskCreate_Handle);
@@ -265,6 +271,18 @@ void Task_Buzzer(void* pvParameters){
 			buzzer_start_time=xTaskGetTickCount();
 		}
 		Buzzer_Buzz(buzzer_start_time,xTaskGetTickCount());
+		vTaskDelay(50);
+	}
+}
+
+/*!
+ * @brief 屏幕服务
+ * @param pvParameters 
+ */
+void Task_Screen(void* pvParameters){
+	screen.use_nonblocking=1;
+	for(;;){
+		OLED_Print_Service();
 		vTaskDelay(50);
 	}
 }

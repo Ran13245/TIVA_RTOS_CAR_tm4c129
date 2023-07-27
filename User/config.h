@@ -58,8 +58,11 @@
     #define         WAVE_UART        USB_UART
 #endif
 
+/*OLED模拟串口*/
+#define         SCREEN_UART      0xCB
+
 /*终端串口*/
-#define         CONSOLE_UART     BLE_UART
+#define         CONSOLE_UART     SCREEN_UART
 
 /*串口波特率*/
 #define         BAUD_RATE_UART0     115200

@@ -24,6 +24,7 @@ typedef struct \
 }Queue_##TYPE 
 
 Queue( uint8_t );
+Queue( char );
 
 #define Queue_init( TYPE ) \
 void Queue_##TYPE##_init( Queue_##TYPE* _Queue,TYPE* _queue_address, unsigned short size){ \
@@ -32,6 +33,7 @@ void Queue_##TYPE##_init( Queue_##TYPE* _Queue,TYPE* _queue_address, unsigned sh
     _Queue->head=_Queue->tail=0; \
 }
 static inline Queue_init(uint8_t)
+static inline Queue_init(char)
 
 /**
  * @brief 入队
@@ -52,6 +54,7 @@ void Queue_##TYPE##_enqueue(Queue_##TYPE* _Queue, TYPE data) { \
     _Queue->tail=next_tail; \
 }
 static inline Queue_enqueue( uint8_t )
+static inline Queue_enqueue( char )
 
 /**
  * @brief 出队
@@ -75,6 +78,7 @@ TYPE Queue_##TYPE##_dequeue( Queue_##TYPE* _Queue ){ \
     return data; \
 }
 static inline Queue_dequeue( uint8_t )
+static inline Queue_dequeue( char )
 
 /**
  * @brief 计算队列中剩余元素个数
@@ -88,3 +92,4 @@ uint16_t Queue_##TYPE##_count_remain( Queue_##TYPE* _Queue ){ \
         return _Queue->tail + _Queue->size - _Queue->head; \
 }
 static inline Queue_count_remain(uint8_t)
+static inline Queue_count_remain(char)
