@@ -34,6 +34,7 @@
 #include "oledfont.h"  	 
 #include "hw_memmap.h"
 #include "driverlib/gpio.h"
+#include "bmp.h"
 
 //OLED的显存
 //存放格式如下.
@@ -211,7 +212,7 @@ void OLED_ShowCHinese(uint8_t x,uint8_t y,uint8_t no)
       }					
 }
 /***********功能描述：显示显示BMP图片128×64起始点坐标(x,y),x的范围0～127，y为页的范围0～7*****************/
-void OLED_DrawBMP(unsigned char x0, unsigned char y0,unsigned char x1, unsigned char y1,unsigned char BMP[])
+void OLED_DrawBMP(unsigned char x0, unsigned char y0,unsigned char x1, unsigned char y1,const unsigned char BMP[])
 { 	
  unsigned int j=0;
  unsigned char x,y;
@@ -270,6 +271,7 @@ void OLED_Init(void)
 	OLED_WR_Byte(0xAF,OLED_CMD); /*display ON*/ 
 	OLED_Clear();
 	OLED_Set_Pos(0,0); 	
+	OLED_DrawBMP(0,0,127,7,gImage_Rhine_ENG);
 }  
 
 
