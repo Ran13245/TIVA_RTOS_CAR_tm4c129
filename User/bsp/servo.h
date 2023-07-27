@@ -12,8 +12,8 @@ typedef struct __servo
 {
     uint32_t PWM_BASE;
     uint32_t PWM_OUT;
-    float range_half;
-    float angle;
+    float range_half;/*范围的一半,degree,0~180*/
+    float angle;/*当前角度，用来读取*/
 }_servo;
 
 extern _servo servo_1;
