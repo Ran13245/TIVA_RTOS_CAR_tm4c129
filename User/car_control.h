@@ -55,7 +55,7 @@ extern _car_control car_control;
 
 void init_Car_Contorl(void);
 void Set_Car_Control(float x, float y, float angle);
-void Set_Car_V_Bias(float v_bias);
+// void Set_Car_V_Bias(float v_bias);
 void Car_Control_Update_Input(void);
 void Car_Control_Update_Output(void);
 

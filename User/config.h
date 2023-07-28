@@ -40,10 +40,10 @@
  */
 /*设备串口,不用时注释掉*/
 #if (!TEST_BENCH)
-    #define         USB_UART         UART2_BASE
-    #define         BLE_UART         UART1_BASE
+    #define         USB_UART         UART4_BASE
+    // #define         BLE_UART         UART1_BASE
     // #define         Jetson_UART      UART0_BASE
-    #define         K210_UART        UART0_BASE
+    // #define         K210_UART        UART0_BASE
     // #define         OPENMV_UART      UART4_BASE
     /*波形显示串口*/
     // #define         WAVE_UART        USB_UART

@@ -226,7 +226,7 @@ float add_bias(float target,bool if_spin){
     
 }
 
-void Set_Car_V_Bias(float v_bias){
-    car_control.to_point_parameter.v_bias=v_bias;
-}
+// void Set_Car_V_Bias(float v_bias){
+//     car_control.to_point_parameter.v_bias=v_bias;
+// }
 
