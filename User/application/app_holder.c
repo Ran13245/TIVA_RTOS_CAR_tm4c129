@@ -36,8 +36,8 @@ void pSet_App_Holder_AngleInSpace(_holder* holder, float angle_in_space){
  * @param angle_pitch 
  */
 void pSet_App_Holder_AnglePitch(_holder* holder, float angle_pitch){
-    if(angle_pitch>HOLDER_PITCH_RANGE)angle_pitch=HOLDER_PITCH_RANGE;
-    if(angle_pitch<0.0F)angle_pitch=0.0F;
+    if(angle_pitch>HOLDER_PITCH_HALF_RANGE)angle_pitch=HOLDER_PITCH_HALF_RANGE;
+    if(angle_pitch<-HOLDER_PITCH_HALF_RANGE)angle_pitch=-HOLDER_PITCH_HALF_RANGE;
     holder->angle_pitch=angle_pitch;
     Set_Servo_Angle(holder->pServo_upper,angle_pitch);
 }

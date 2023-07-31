@@ -15,6 +15,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <math.h>
 
 #include "tm4c1290ncpdt.h"
 #include "hw_types.h"					

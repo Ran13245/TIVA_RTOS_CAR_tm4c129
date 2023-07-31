@@ -41,7 +41,7 @@
 /*设备串口,不用时注释掉*/
 #if (!TEST_BENCH)
     #define         USB_UART         UART4_BASE
-    // #define         BLE_UART         UART1_BASE
+    #define         BLE_UART         UART1_BASE
     // #define         Jetson_UART      UART0_BASE
     // #define         K210_UART        UART0_BASE
     // #define         OPENMV_UART      UART4_BASE
@@ -255,4 +255,12 @@
  * ****************************************************************************************************************************
  */
 #define SERVO_1_HALF_RANGE 180
-#define SERVO_2_HALF_RANGE 180
+#define SERVO_2_HALF_RANGE 90
+/*bus servo*/
+#define SERVO_1_TYPE BUS_UART
+#define SERVO_2_TYPE BUS_UART
+#define SERVO_BUS_UART UART0_BASE
+#define SERVO_1_HALF_CNT_RANGE 2048
+#define SERVO_2_HALF_CNT_RANGE 1100
+#define SERVO_1_CNT_OFFSET 0
+#define SERVO_2_CNT_OFFSET 0

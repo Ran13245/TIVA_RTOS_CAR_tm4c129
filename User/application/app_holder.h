@@ -13,7 +13,7 @@ typedef struct __holder
     float angle_in_space;/*0~360,舵机在导航坐标系的角度位置*/
     float angle_in_car;/*0~360,舵机经过航偏角补偿之后 在小车坐标系的位置*/
     float angle_in_servo;/*-180~180,舵机在舵机坐标系中的位置*/
-    float angle_pitch;/*俯仰角,0~HOLDER_PITCH_RANGE*/
+    float angle_pitch;/*俯仰角,+~-HOLDER_PITCH_RANGE*/
 }_holder;
 
 extern _holder holder_2d;

@@ -15,6 +15,8 @@ void Enter_Testbench(void){
     init_drv_uDMA();
     IntMasterEnable();
     Set_LED(0,0,1);
+    OLED_Init();
+    init_OLED_Print();
     delay_ms(2000);//等待小车完全停止
     // test_print();
     // test_encoder();
@@ -26,8 +28,8 @@ void Enter_Testbench(void){
     // test_communicate();
     // test_car();
     // test_utils();
-    // test_servo();
-    test_oled();
+    test_servo();
+    // test_oled();
     while(1);
 
 }
@@ -236,13 +238,18 @@ void test_utils(void){
     
 }
 
+#include <math.h>
 void test_servo(void){
+    float angle=0;
     init_drv_PWM();
     init_servo();
-    Set_Servo_Angle(&servo_1,90);
+    
     while (1)
     {
-        /* code */
+        angle+=0.01f;
+        printf_user(CONSOLE_UART,"%.2f\n",angle);
+        Set_Servo_Angle(&servo_1,angle);
+        delay_ms(50);
     }
 }
 
